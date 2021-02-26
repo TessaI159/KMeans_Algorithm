@@ -8,6 +8,7 @@ Centroid::Centroid() {};
 Centroid::Centroid(std::vector<Pixel *> pixelVector_ptr)
 {
   m_ownedPixels_ptr = pixelVector_ptr;
+  updateLocation();
 }
 
 void Centroid::updateLocation()

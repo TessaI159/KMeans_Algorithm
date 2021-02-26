@@ -60,5 +60,8 @@ main_clean:
 test_clean:
 	@$(MAKE) -C $(TEST_DIR) clean
 
+check: all
+	@./centroid_tests.run
+
 coverage: clean check
 	@lcov -c -d $(PWD) -o coverage.info -q --no-external && genhtml -o coverage_info coverage.info && firefox ./coverage_info/index.html

@@ -11,6 +11,7 @@ BOOST_AUTO_TEST_SUITE(centroid_test_suite)
 
 BOOST_AUTO_TEST_CASE(centroid_construction)
 {
+  std::cout << "Centroid construction test case\n";
   Centroid centroid{};
   BOOST_CHECK_EQUAL(centroid.getID(), -1);
   BOOST_CHECK_EQUAL(centroid.getLocation().r, 0);
@@ -20,6 +21,7 @@ BOOST_AUTO_TEST_CASE(centroid_construction)
 
 BOOST_AUTO_TEST_CASE(centroid_location)
 {
+  std::cout << "Centroid location test case\n";
   Pixel p0{158,15,14};
   Pixel p1{186,139,77};
   Pixel p2{210,220,26};
@@ -42,6 +44,14 @@ BOOST_AUTO_TEST_CASE(centroid_location)
   Pixel p19{118,199,245};
 
   std::vector<Pixel *> pixelVector_ptr{&p0,&p1,&p2,&p3,&p4,&p5,&p6,&p7,&p8,&p9,&p10,&p11,&p12,&p13,&p14,&p15,&p16,&p17,&p18,&p19};
+  Centroid centroid(pixelVector_ptr);
+
+  for(std::size_t i{0}; i < pixelVector_ptr.size(); ++i)
+    {
+      BOOST_CHECK_EQUAL(pixelVector_ptr[i]->r, centroid.getOwnedPixels_ptr()[i]->r);
+      BOOST_CHECK_EQUAL(pixelVector_ptr[i]->g, centroid.getOwnedPixels_ptr()[i]->g);
+      BOOST_CHECK_EQUAL(pixelVector_ptr[i]->b, centroid.getOwnedPixels_ptr()[i]->b);
+    }
 
   // R average 132.7
   // G average 127.2

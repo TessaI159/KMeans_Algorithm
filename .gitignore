@@ -2,11 +2,14 @@
 *.gcda
 *.gcna
 *.o
+*.a
 src/*.o
 src/*.gcna
 src/*gcda
 src/*.run
+stc/*.a
 t/*.o
 t/*.gcna
 t/*gcda
 t/*.run
+t/*.a
