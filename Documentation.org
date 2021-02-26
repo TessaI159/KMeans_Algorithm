@@ -1,6 +1,5 @@
 #+TITLE: KMeans documentation
 #+OPTIONS: ^:nil
-#+OPTIONS: *:nil
 
 * Pixel
 ** Struct
@@ -29,6 +28,10 @@ A vector of pixel pointers which point to the pixel in the main pixelVector whic
 **** Pixel m_location
 A pixel represeting this centroids current location in 3D space
 *** Public
+**** Centroid()
+Default constructor
+****  Centroid(std::vector<Pixel \ast{}> pixelVector_ptr)
+Constructs a Centroid with m_ownedPixels_ptr = pixelVector_ptr and calls updateLocation() immediately
 **** int_fast16_t getID()
 Returns m_id
 **** std::vector<Pixel \ast{}> getOwnedPixels_ptr()

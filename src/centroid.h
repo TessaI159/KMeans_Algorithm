@@ -12,6 +12,8 @@ private:
   std::vector<Pixel *> m_ownedPixels_ptr{};
   Pixel m_location{};
 public:
+  Centroid();
+  Centroid(std::vector<Pixel *> pixelVector_ptr);
   int_fast16_t getID() { return m_id; }
   std::vector<Pixel *> getOwnedPixels_ptr() { return m_ownedPixels_ptr; }
   Pixel getLocation() { return m_location; }
