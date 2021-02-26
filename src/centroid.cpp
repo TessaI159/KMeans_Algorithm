@@ -1,7 +1,6 @@
 #include "centroid.h"
 #include "pixel.h"
 
-#include <cstdlib>
 #include <math.h>
 
 Centroid::Centroid() {};
@@ -55,7 +54,7 @@ void Centroid::addPixel(Pixel *pixel_ptr)
   m_ownedPixels_ptr.push_back(pixel_ptr);
 }
 
-Pixel* Centroid::releasePixel(int_fast32_t pixelID)
+Pixel* Centroid::releasePixel(int pixelID)
 {
   Pixel *tempPixel{};
   for(std::size_t i{0}; i < m_ownedPixels_ptr.size(); ++i)

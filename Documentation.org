@@ -3,17 +3,17 @@
 
 * Pixel
 ** Struct
-*** int_fast16_t r
+*** int r
 Red value
-*** int_fast16_t g
+*** int g
 Green value
-*** int_fast16_t b
+*** int b
 Blue value
-*** int_fast32_t id
+*** int id
 The unique ID of the pixel
-*** int_fast16_t ownedBy
+*** int ownedBy
 The ID of the centroid which owns the pixel
-*** int_fast16_t swapTo
+*** int swapTo
 ID of the centroid to be swapped to, otherwise -1
 *** bool needsSwapped
 True if the pixel is marked to be swapped, false otherwise
@@ -21,7 +21,7 @@ True if the pixel is marked to be swapped, false otherwise
 * Centroid
 ** Class
 *** Private
-**** int_fast16_t m_id
+**** int m_id
 The unique ID of the centroid
 **** std::vector<Pixel \ast{}> m_ownedPixels_ptr
 A vector of pixel pointers which point to the pixel in the main pixelVector which this centroid owns
@@ -32,7 +32,7 @@ A pixel represeting this centroids current location in 3D space
 Default constructor
 **** Centroid(std::vector<Pixel \ast{}> pixelVector_ptr)
 Constructs a Centroid with m_ownedPixels_ptr = pixelVector_ptr and calls updateLocation() immediately
-**** int_fast16_t getID()
+**** int getID()
 Returns m_id
 **** std::vector<Pixel \ast{}> getOwnedPixels_ptr()
 Returns m_ownedPixels_ptr
@@ -44,10 +44,16 @@ Takes the average r, g, and b value of all pixels in m_ownedPixels_ptr and sets 
 Returns the distance between m_location and \ast{}pixel_ptr using the euclidean distance function.
 **** void addPixel(Pixel \ast{}pixel_ptr)
 Adds \ast{}pixel_ptr to m_ownedPixels_ptr through the push_back() vector method
-**** Pixel\ast{} releasePixel(int_fast32_t pixelIDp)
+**** Pixel\ast{} releasePixel(int pixelIDp)
 Removes the Pixel\ast{} with id pixelID from m_ownedPixels_ptr and returns it to the caller
 If no pixel with id pixelID is found in m_ownedPixels_ptr, returns nullptr
 
+* Image
+** Functions
+*** cv::Mat loadImage(std::string filename)
+Load an image with name filename and return it to the caller in cv::Mat form
+*** std::vector<Pixel> scanImage(cv::Mat image)
+Read each pixel of an image in cv::Mat form and add the pixel to a vector. Return the vector to the caller
+This is where pixels are assigned their id's
 * KMeans
 
-* Image

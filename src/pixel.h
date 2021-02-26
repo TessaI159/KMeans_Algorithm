@@ -1,16 +1,15 @@
 #ifndef PIXEL_H
 #define PIXEL_H
 
-#include <cstdint>
 
 struct Pixel
 {
-  int_fast16_t r{0};
-  int_fast16_t g{0};
-  int_fast16_t b{0};
-  int_fast32_t id{-1};
-  int_fast16_t ownedBy{-1};
-  int_fast16_t swapTo{-1};
+  int r{0};
+  int g{0};
+  int b{0};
+  int id{-1};
+  int ownedBy{-1};
+  int swapTo{-1};
   bool needsSwapped{false};
 };
 

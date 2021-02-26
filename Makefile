@@ -63,7 +63,7 @@ test_clean:
 	@$(MAKE) -C $(TEST_DIR) clean
 
 coverage_clean:
-	@$(RM) *.gcno *.gcda src/*.gcda src/*.gcno t/*.gcda t/*.gcno
+	@$(RM) -rf *.gcno *.gcda src/*.gcda src/*.gcno t/*.gcda t/*.gcno coverage_info
 
 check: all
 	@./centroid_tests.run
