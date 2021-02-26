@@ -16,3 +16,5 @@ t/*gcda
 t/*.run
 t/*.a
 t/*.run
+*.info
+coverage_info/
