@@ -1,0 +1,25 @@
+#+TITLE: KMeans documentation
+#+OPTIONS: ^:nil
+
+* Pixel
+** Struct
+*** int_fast8_t r
+Red value
+*** int_fast8_t g
+Green value
+*** int_fast8_t b
+Blue value
+*** int_fast32_t id
+The unique ID of the pixel
+*** int_fast16_t ownedBy
+The ID of the centroid which owns the pixel
+*** int_fast16_t swapTo
+ID of the centroid to be swapped to, otherwise -1
+*** bool needsSwapped
+True if the pixel is marked to be swapped, false otherwise
+
+* Centroid
+
+* KMeans
+
+* Image

@@ -2,3 +2,11 @@
 *.gcda
 *.gcna
 *.o
+src/*.o
+src/*.gcna
+src/*gcda
+src/*.run
+t/*.o
+t/*.gcna
+t/*gcda
+t/*.run
