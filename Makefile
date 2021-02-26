@@ -45,6 +45,8 @@ export TEST_DIR
 
 all: coverage_clean main test
 
+no_tests: coverage_clean main
+
 main:
 	@$(MAKE) -C $(SRC_DIR)
 
