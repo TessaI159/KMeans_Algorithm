@@ -3,13 +3,16 @@
 *.gcno
 *.o
 *.a
+*/run
 src/*.o
 src/*.gcno
 src/*gcda
 src/*.run
-stc/*.a
+src/*.a
+src/*.run
 t/*.o
 t/*.gcno
 t/*gcda
 t/*.run
 t/*.a
+t/*.run

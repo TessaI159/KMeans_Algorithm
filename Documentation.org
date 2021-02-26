@@ -3,11 +3,11 @@
 
 * Pixel
 ** Struct
-*** int_fast8_t r
+*** int_fast16_t r
 Red value
-*** int_fast8_t g
+*** int_fast16_t g
 Green value
-*** int_fast8_t b
+*** int_fast16_t b
 Blue value
 *** int_fast32_t id
 The unique ID of the pixel

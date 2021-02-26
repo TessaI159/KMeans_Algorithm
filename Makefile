@@ -43,7 +43,7 @@ export TEST_DIR
 #
 #-----------
 
-all: main test
+all: coverage_clean main test
 
 main:
 	@$(MAKE) -C $(SRC_DIR)
@@ -59,6 +59,9 @@ main_clean:
 
 test_clean:
 	@$(MAKE) -C $(TEST_DIR) clean
+
+coverage_clean:
+	@$(RM) *.gcno *.gcda src/*.gcda src/*.gcno t/*.gcda t/*.gcno
 
 check: all
 	@./centroid_tests.run
