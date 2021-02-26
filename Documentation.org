@@ -1,5 +1,6 @@
 #+TITLE: KMeans documentation
 #+OPTIONS: ^:nil
+#+OPTIONS: *:nil
 
 * Pixel
 ** Struct
@@ -19,6 +20,29 @@ ID of the centroid to be swapped to, otherwise -1
 True if the pixel is marked to be swapped, false otherwise
 
 * Centroid
+** Class
+*** Private
+**** int_fast16_t m_id
+The unique ID of the centroid
+**** std::vector<Pixel \ast{}> m_ownedPixels_ptr
+A vector of pixel pointers which point to the pixel in the main pixelVector which this centroid owns
+**** Pixel m_location
+A pixel represeting this centroids current location in 3D space
+*** Public
+**** int_fast16_t getID()
+Returns m_id
+**** std::vector<Pixel \ast{}> getOwnedPixels_ptr()
+Returns m_ownedPixels_ptr
+**** Pixel getLocation()
+Returns m_location
+**** void updateLocation()
+Takes the average r, g, and b value of all pixels in m_ownedPixels_ptr and sets the r, g, and b values of m_location to the averages.
+**** double distanceFromPixel(Pixel \ast{}pixel_ptr)
+Returns the distance between m_location and \ast{}pixel_ptr using the euclidean distance function.
+**** void addPixel(Pixel \ast{}pixel_ptr)
+Adds \ast{}pixel_ptr to m_ownedPixels_ptr through the push_back() vector method
+**** Pixel\ast{} releasePixel(int_fast32_t pixelID)
+Removes the Pixel\ast{} with id pixelID from m_ownedPixels_ptr and returns it to the caller
 
 * KMeans
 
