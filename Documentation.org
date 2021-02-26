@@ -30,7 +30,7 @@ A pixel represeting this centroids current location in 3D space
 *** Public
 **** Centroid()
 Default constructor
-****  Centroid(std::vector<Pixel \ast{}> pixelVector_ptr)
+**** Centroid(std::vector<Pixel \ast{}> pixelVector_ptr)
 Constructs a Centroid with m_ownedPixels_ptr = pixelVector_ptr and calls updateLocation() immediately
 **** int_fast16_t getID()
 Returns m_id
@@ -44,8 +44,9 @@ Takes the average r, g, and b value of all pixels in m_ownedPixels_ptr and sets 
 Returns the distance between m_location and \ast{}pixel_ptr using the euclidean distance function.
 **** void addPixel(Pixel \ast{}pixel_ptr)
 Adds \ast{}pixel_ptr to m_ownedPixels_ptr through the push_back() vector method
-**** Pixel\ast{} releasePixel(int_fast32_t pixelID)
+**** Pixel\ast{} releasePixel(int_fast32_t pixelIDp)
 Removes the Pixel\ast{} with id pixelID from m_ownedPixels_ptr and returns it to the caller
+If no pixel with id pixelID is found in m_ownedPixels_ptr, returns nullptr
 
 * KMeans
 

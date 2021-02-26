@@ -49,3 +49,23 @@ double Centroid::distanceFromPixel(Pixel *pixel_ptr)
 	  pow(centroid_g - pixel_g, 2) +
 	  pow(centroid_b - pixel_b, 2));
 }
+
+void Centroid::addPixel(Pixel *pixel_ptr)
+{
+  m_ownedPixels_ptr.push_back(pixel_ptr);
+}
+
+Pixel* Centroid::releasePixel(int_fast32_t pixelID)
+{
+  Pixel *tempPixel{};
+  for(std::size_t i{0}; i < m_ownedPixels_ptr.size(); ++i)
+    {
+      if(m_ownedPixels_ptr[i]->id == pixelID)
+	{
+	  tempPixel = m_ownedPixels_ptr.at(i);
+	  m_ownedPixels_ptr.erase(m_ownedPixels_ptr.begin() + i);
+	  return tempPixel;
+	}
+    }
+  return nullptr;
+}
