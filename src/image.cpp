@@ -5,13 +5,7 @@
 
 #include <opencv2/opencv.hpp>
 
-cv::Mat loadImage(std::string filename)
-{
-  cv::Mat loadedImage{cv::imread(filename)};
-  return loadedImage;
-}
-
-std::vector<Pixel> scanImage(cv::Mat image)
+std::vector<Pixel> scanImage(cv::Mat &image)
 {
   std::vector<Pixel> pixelVector{};
   int channels = image.channels();
@@ -31,14 +25,15 @@ std::vector<Pixel> scanImage(cv::Mat image)
     {
       ptr = image.ptr<uchar>(i);
       Pixel tempPixel{};
-      for(int j{0}; j < cols; ++j)
+      for(int j{0}; j < cols; j += 3)
 	{
 	  // Opencv uses BGR format by default
 	  tempPixel.b = ptr[j];
-	  tempPixel.g = ptr[j++];
-	  tempPixel.r = ptr[j++];
+	  tempPixel.g = ptr[j + 1];
+	  tempPixel.r = ptr[j + 2];
 	  tempPixel.id = ++id;
 	  pixelVector.push_back(tempPixel);
 	}
     }
+  return pixelVector;
 }

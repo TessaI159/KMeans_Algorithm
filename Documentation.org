@@ -50,8 +50,6 @@ If no pixel with id pixelID is found in m_ownedPixels_ptr, returns nullptr
 
 * Image
 ** Functions
-*** cv::Mat loadImage(std::string filename)
-Load an image with name filename and return it to the caller in cv::Mat form
 *** std::vector<Pixel> scanImage(cv::Mat image)
 Read each pixel of an image in cv::Mat form and add the pixel to a vector. Return the vector to the caller
 This is where pixels are assigned their id's

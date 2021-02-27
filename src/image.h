@@ -7,8 +7,6 @@
 
 #include <string>
 
-
-cv::Mat loadImage(std::string filename);
 std::vector<Pixel> scanImage(cv::Mat &image);
 
 #endif
