@@ -26,9 +26,11 @@ BOOST_AUTO_TEST_CASE(image_loading)
   
   for(int i{0}; i < pixelVectorSize / 50; ++i)
     {
-      BOOST_CHECK_EQUAL(pixelVector[rand() % pixelVectorSize].r, 255);
-      BOOST_CHECK_EQUAL(pixelVector[rand() % pixelVectorSize].g, 144);
-      BOOST_CHECK_EQUAL(pixelVector[rand() % pixelVectorSize].b, 176);
+      int randomNumber = rand();
+      BOOST_CHECK_EQUAL(pixelVector[randomNumber % pixelVectorSize].r, 255);
+      BOOST_CHECK_EQUAL(pixelVector[randomNumber % pixelVectorSize].g, 144);
+      BOOST_CHECK_EQUAL(pixelVector[randomNumber % pixelVectorSize].b, 176);
+      BOOST_TEST(pixelVector[randomNumber % pixelVectorSize].id != -1);
     }
 }
 

@@ -46,16 +46,17 @@ BOOST_AUTO_TEST_CASE(centroid_construction)
   std::vector<Pixel *> pixelVector_ptr{&p0,&p1,&p2,&p3,&p4,&p5,&p6,&p7,&p8,&p9,&p10,&p11,&p12
 				       ,&p13,&p14,&p15,&p16,&p17,&p18,&p19};
   Centroid centroid_2(pixelVector_ptr);
+  std::vector<Pixel *> pixelVectorInner{centroid_2.getOwnedPixels_ptr()};
 
   for(std::size_t i{0}; i < pixelVector_ptr.size(); ++i)
     {
-      BOOST_CHECK_EQUAL(pixelVector_ptr[i]->r, centroid_2.getOwnedPixels_ptr()[i]->r);
-      BOOST_CHECK_EQUAL(pixelVector_ptr[i]->g, centroid_2.getOwnedPixels_ptr()[i]->g);
-      BOOST_CHECK_EQUAL(pixelVector_ptr[i]->b, centroid_2.getOwnedPixels_ptr()[i]->b);
-      BOOST_CHECK_EQUAL(pixelVector_ptr[i]->id, centroid_2.getOwnedPixels_ptr()[i]->id);
-      BOOST_CHECK_EQUAL(pixelVector_ptr[i]->ownedBy, centroid_2.getOwnedPixels_ptr()[i]->ownedBy);
-      BOOST_CHECK_EQUAL(pixelVector_ptr[i]->swapTo, centroid_2.getOwnedPixels_ptr()[i]->swapTo);
-      BOOST_CHECK_EQUAL(pixelVector_ptr[i]->needsSwapped, centroid_2.getOwnedPixels_ptr()[i]->needsSwapped);
+      BOOST_CHECK_EQUAL(pixelVector_ptr[i]->r, pixelVectorInner[i]->r);
+      BOOST_CHECK_EQUAL(pixelVector_ptr[i]->g, pixelVectorInner[i]->g);
+      BOOST_CHECK_EQUAL(pixelVector_ptr[i]->b, pixelVectorInner[i]->b);
+      BOOST_CHECK_EQUAL(pixelVector_ptr[i]->id, pixelVectorInner[i]->id);
+      BOOST_CHECK_EQUAL(pixelVector_ptr[i]->ownedBy, pixelVectorInner[i]->ownedBy);
+      BOOST_CHECK_EQUAL(pixelVector_ptr[i]->swapTo, pixelVectorInner[i]->swapTo);
+      BOOST_CHECK_EQUAL(pixelVector_ptr[i]->needsSwapped, pixelVectorInner[i]->needsSwapped);
     }
 }
 

@@ -66,7 +66,7 @@ coverage_clean:
 	@$(RM) -rf *.gcno *.gcda src/*.gcda src/*.gcno t/*.gcda t/*.gcno coverage_info
 
 check: all
-	@./centroid_tests.run; ./image_tests.run
+	@./centroid_tests.run; ./image_tests.run; ./kmeans_tests.run
 
 coverage: clean check
 	@lcov -c -d $(PWD) -o coverage.info -q --no-external && genhtml -o coverage_info coverage.info && firefox ./coverage_info/index.html
