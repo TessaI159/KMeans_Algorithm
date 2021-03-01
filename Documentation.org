@@ -58,4 +58,7 @@ This is where pixels are assigned their id's
 *** std::Vector<Centroid> createCentroids(std::vector<Pixel> pixelVector, int k)
 Creates k centroids and places them in a std::vector<Centroid> to be returned to the caller
 Each centroid contains a std::vector<Pixel\ast{}> which hold totalPixels/k Pixel*
-Any leftover pixels from the above integer division are placed in the last centroid created
+Any leftover pixels from the above integer division are placed in the last centroid in the vector
+*** 
+
+
