@@ -11,6 +11,21 @@ Centroid::Centroid(std::vector<Pixel *> pixelVector_ptr)
   updateLocation();
 }
 
+int Centroid::getID()
+{
+  return m_id;
+}
+
+std::vector<Pixel *> Centroid::getOwnedPixels_ptr()
+{
+  return m_ownedPixels_ptr;
+}
+
+Pixel Centroid::getLocation()
+{
+  return m_location;
+}
+
 void Centroid::updateLocation()
 {
   double rAverage{0};

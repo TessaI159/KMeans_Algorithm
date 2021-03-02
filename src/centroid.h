@@ -13,9 +13,9 @@ private:
 public:
   Centroid();
   Centroid(std::vector<Pixel *> pixelVector_ptr);
-  int getID() { return m_id; }
-  std::vector<Pixel *> getOwnedPixels_ptr() { return m_ownedPixels_ptr; }
-  Pixel getLocation() { return m_location; }
+  int getID();
+  std::vector<Pixel *> getOwnedPixels_ptr();
+  Pixel getLocation();
   void updateLocation();
   double distanceFromPixel(Pixel *pixel_ptr);
   void addPixel(Pixel *pixel_ptr);
