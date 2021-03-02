@@ -5,7 +5,7 @@
 
 #include <opencv2/opencv.hpp>
 
-const std::vector<Pixel> scanImage(cv::Mat &image)
+ std::vector<Pixel> scanImage(cv::Mat &image)
 {
   std::vector<Pixel> pixelVector{};
   int channels = image.channels();
@@ -35,6 +35,5 @@ const std::vector<Pixel> scanImage(cv::Mat &image)
 	  pixelVector.push_back(tempPixel);
 	}
     }
-  const std::vector<Pixel> pixelVector_c{pixelVector};
-  return pixelVector_c;
+  return pixelVector;
 }

@@ -29,11 +29,13 @@ A vector of pixel pointers which point to the pixel in the main pixelVector whic
 A pixel represeting this centroids current location in 3D space
 *** Public
 **** Centroid()
-Default constructor
+Default ructor
 **** Centroid(std::vector<Pixel \ast{}> pixelVector_ptr)
-Constructs a Centroid with m_ownedPixels_ptr = pixelVector_ptr and calls updateLocation() immediately
+ructs a Centroid with m_ownedPixels_ptr = pixelVector_ptr and calls updateLocation() immediately
 **** int getID()
 Returns m_id
+**** int setID(int id)
+sets m_id to id
 **** std::vector<Pixel \ast{}> getOwnedPixels_ptr()
 Returns m_ownedPixels_ptr
 **** Pixel getLocation()
@@ -56,14 +58,20 @@ Return the Pixel\ast{} contained in m_ownedPixels_ptr with id pixelID. Return nu
 Read each pixel of an image in cv::Mat form and add the pixel to a vector. Return the vector to the caller
 This is where pixels are assigned their id's
 * KMeans
-** Functions
-*** std::vector<Centroid> createCentroids(const std::vector<Pixel> pixelVector, int k)
+** Function
+*** std::vector<Centroid> createCentroids( std::vector<Pixel> pixelVector, int k)
 Create and returns a vector of centroids, each with pixelVector.size() / k pixels, with the leftover pixels from integer division being assigned to the last centroid in the vector.
 *** void updateCentroidLocations(std::vector<Centroid> &centroidVector)
 Calls updateLocation() on each centroid in the vector.
-*** bool updateCentroidOwnership(std::vector<Centroid> & centroidVector, const std::vector<Pixel> &pixelVector_c)
+*** bool updateCentroidOwnership(std::vector<Centroid> & centroidVector,  const std::vector<Pixel> &pixelVector)
 Loops through each pixel and checks its distance from each centroid. If the closest centroid does not own the pixel, mark the pixel for swapping.
-*** bool updateCentroids(std::vector<Centroid> &centroidVector, const std::vector<Pixel> &pixelVector_c)
+*** bool updateCentroids(std::vector<Centroid> &centroidVector,  const std::vector<Pixel> &pixelVector)
 Calls updateCentroidLocations() and updateCentroidOwnership() in that order. Returns true if any ownership changes take place, otherwise returns false.
+**** We pass pixelVector by const reference to avoid copying the entire vector each time it's called (it holds over 2 million pixels with a 1080p image)
 *** int smallestElement(double distances[], std::size_t size) 
 Returns the index of the smallest elements of distances[]
+*** void setSwap(Pixel\ast{} pixel_ptr, int centroidToSwapID)
+*** void runSwaps(std::vector<Centroid> &centroidVector, const std::vector<Pixel> &pixelVector);
+*** void swap(std::vector<Centroid> &centroidVector, Pixel\ast{} pixel_ptr)
+
+

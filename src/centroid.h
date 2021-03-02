@@ -14,6 +14,7 @@ public:
   Centroid();
   Centroid(std::vector<Pixel *> pixelVector_ptr);
   int getID();
+  void setID(int id);
   std::vector<Pixel *> getOwnedPixels_ptr();
   Pixel getLocation();
   void updateLocation();

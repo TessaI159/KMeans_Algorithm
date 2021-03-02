@@ -10,6 +10,7 @@
 
 int main()
 {
-  cv::Mat loadedImage = cv::imread("/home/tess/Code/KMeans/assets/test_image.png");
+  cv::Mat loadedImage = cv::imread("/home/tess/Code/KMeans/assets/toad.png");
+  
   return 0;
 }

@@ -2,6 +2,7 @@
 #include "pixel.h"
 
 #include <math.h>
+#include <iostream>
 
 Centroid::Centroid() {};
 
@@ -15,6 +16,12 @@ int Centroid::getID()
 {
   return m_id;
 }
+
+void Centroid::setID(int id)
+{
+  m_id = id;
+}
+  
 
 std::vector<Pixel *> Centroid::getOwnedPixels_ptr()
 {
@@ -67,6 +74,7 @@ double Centroid::distanceFromPixel(Pixel *pixel_ptr)
 void Centroid::addPixel(Pixel *pixel_ptr)
 {
   m_ownedPixels_ptr.push_back(pixel_ptr);
+  (*pixel_ptr).ownedBy = m_id;
 }
 
 Pixel* Centroid::releasePixel(int pixelID)
@@ -78,6 +86,7 @@ Pixel* Centroid::releasePixel(int pixelID)
 	{
 	  tempPixel = m_ownedPixels_ptr.at(i);
 	  m_ownedPixels_ptr.erase(m_ownedPixels_ptr.begin() + i);
+	  (*tempPixel).ownedBy = -1;
 	  return tempPixel;
 	}
     }
@@ -86,6 +95,10 @@ Pixel* Centroid::releasePixel(int pixelID)
 
 Pixel* Centroid::getPixelByID(int pixelID)
 {
+  if(pixelID < 0)
+    {
+      return nullptr;
+    }
   for(auto pixel : m_ownedPixels_ptr)
     {
       if(pixel->id == pixelID)

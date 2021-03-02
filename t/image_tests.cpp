@@ -1,7 +1,7 @@
-#include "../src/centroid.h"
+o#include "../src/centroid.h"
 #include "../src/pixel.h"
 #include "../src/image.h"
-#define BOOST_TEST_MODULE CentroidTests
+#define BOOST_TEST_MODULE ImageTests
 #include <boost/test/unit_test.hpp>
 #include <boost/test/unit_test_suite.hpp>
 
