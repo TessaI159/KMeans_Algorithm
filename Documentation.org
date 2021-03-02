@@ -47,6 +47,8 @@ Adds \ast{}pixel_ptr to m_ownedPixels_ptr through the push_back() vector method
 **** Pixel\ast{} releasePixel(int pixelIDp)
 Removes the Pixel\ast{} with id pixelID from m_ownedPixels_ptr and returns it to the caller
 If no pixel with id pixelID is found in m_ownedPixels_ptr, returns nullptr
+**** Pixel\ast{} getPixelByID(int pixelID)
+Return the Pixel\ast{} contained in m_ownedPixels_ptr with id pixelID. Return nullptr if no pixel is found.
 
 * Image
 ** Functions
@@ -55,10 +57,13 @@ Read each pixel of an image in cv::Mat form and add the pixel to a vector. Retur
 This is where pixels are assigned their id's
 * KMeans
 ** Functions
-*** std::Vector<Centroid> createCentroids(std::vector<Pixel> pixelVector, int k)
-Creates k centroids and places them in a std::vector<Centroid> to be returned to the caller
-Each centroid contains a std::vector<Pixel\ast{}> which hold totalPixels/k Pixel*
-Any leftover pixels from the above integer division are placed in the last centroid in the vector
-*** 
-
-
+*** std::vector<Centroid> createCentroids(const std::vector<Pixel> pixelVector, int k)
+Create and returns a vector of centroids, each with pixelVector.size() / k pixels, with the leftover pixels from integer division being assigned to the last centroid in the vector.
+*** void updateCentroidLocations(std::vector<Centroid> &centroidVector)
+Calls updateLocation() on each centroid in the vector.
+*** bool updateCentroidOwnership(std::vector<Centroid> & centroidVector, const std::vector<Pixel> &pixelVector_c)
+Loops through each pixel and checks its distance from each centroid. If the closest centroid does not own the pixel, mark the pixel for swapping.
+*** bool updateCentroids(std::vector<Centroid> &centroidVector, const std::vector<Pixel> &pixelVector_c)
+Calls updateCentroidLocations() and updateCentroidOwnership() in that order. Returns true if any ownership changes take place, otherwise returns false.
+*** int smallestElement(double distances[], std::size_t size) 
+Returns the index of the smallest elements of distances[]

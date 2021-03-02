@@ -7,6 +7,6 @@
 
 #include <string>
 
-std::vector<Pixel> scanImage(cv::Mat &image);
+const std::vector<Pixel> scanImage(cv::Mat &image);
 
 #endif

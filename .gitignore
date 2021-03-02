@@ -3,6 +3,8 @@
 *.gcno
 *.o
 *.a
+#*
+.#*
 */run
 src/*.o
 src/*.gcno
@@ -10,11 +12,15 @@ src/*gcda
 src/*.run
 src/*.a
 src/*.run
+src/#*
+src/.#*
 t/*.o
 t/*.gcno
 t/*gcda
 t/*.run
 t/*.a
 t/*.run
+t/#*
+t/.#*
 *.info
 coverage_info/

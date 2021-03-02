@@ -68,3 +68,15 @@ Pixel* Centroid::releasePixel(int pixelID)
     }
   return nullptr;
 }
+
+Pixel* Centroid::getPixelByID(int pixelID)
+{
+  for(auto pixel : m_ownedPixels_ptr)
+    {
+      if(pixel->id == pixelID)
+	{
+	  return pixel;
+	}
+    }
+  return nullptr;
+}

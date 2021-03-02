@@ -31,3 +31,48 @@ std::vector<Centroid> createCentroids(std::vector<Pixel> pixelVector, int k)
     }
   return centroidVector;
 }
+
+void updateCentroidLocations(std::vector<Centroid> &centroidVector)
+{
+  for(auto &centroid : centroidVector) {
+    centroid.updateLocation();
+  }
+}
+
+bool updateCentroidOwnership(std::vector<Centroid> & centroidVector,
+			     const std::vector<Pixel> &pixelVector_c)
+{
+  for (auto pixel : pixelVector_c)
+    {
+      double distances[centroidVector.size()];
+      for(std::size_t i{0}; i < centroidVector.size(); ++i)
+	{
+	  distances[i] = centroidVector[i].distanceFromPixel(&pixel);
+	}
+      if(pixel.ownedBy != smallestElement(distances, centroidVector.size()))
+	{
+	  centroidVector[pixel.ownedBy].getPixelByID(pixel.id);
+	}
+    }
+}
+
+bool updateCentroids(std::vector<Centroid> &centroidVector,
+		     const std::vector<Pixel> &pixelVector_c)
+{
+  updateCentroidLocations(centroidVector);
+  return updateCentroidOwnership(centroidVector, pixelVector_c);
+}
+
+int smallestElement(double distances[], std::size_t size)
+{
+  int smallestElementIndex = 0;
+  double smallestElementSize = distances[0];
+  for(std::size_t i{1}; i < size; ++i)
+    {
+      if(distances[i] < smallestElementSize)
+	{
+	  smallestElementIndex = i;
+	}
+    }
+  return smallestElementIndex;
+}

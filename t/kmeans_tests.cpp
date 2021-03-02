@@ -18,7 +18,7 @@ BOOST_AUTO_TEST_CASE(centroid_vector_creation)
   std::cout << "\tcentroid vector creation\n";
   cv::Mat image{cv::imread("/home/tess/Code/KMeans/assets/cooldownpink.jpg")};
   // 76800 pixels total
-  std::vector<Pixel> pixelVector{scanImage(image)};
+  const std::vector<Pixel> pixelVector{scanImage(image)};
 
   BOOST_REQUIRE(image.data);
 
@@ -28,7 +28,6 @@ BOOST_AUTO_TEST_CASE(centroid_vector_creation)
     {
       BOOST_CHECK_EQUAL(centroid.getOwnedPixels_ptr().size(), 25600);
     }
-
 }
 
 BOOST_AUTO_TEST_SUITE_END()

@@ -20,6 +20,7 @@ public:
   double distanceFromPixel(Pixel *pixel_ptr);
   void addPixel(Pixel *pixel_ptr);
   Pixel* releasePixel(int pixelID);
+  Pixel* getPixelByID(int pixelID);
 };
 
 #endif
