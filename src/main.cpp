@@ -14,19 +14,8 @@ int main()
   clock_t totalTimeStart{clock()};
   cv::Mat loadedImage = cv::imread("/home/tess/Code/KMeans/assets/flower.jpg");
   std::vector<Pixel> pixelVector{scanImage(loadedImage)};
-  // cv::Mat nearest{};
-  // cv::Mat linear{};
-  // cv::Mat area{};
-  // cv::Mat cubic{};
-  // cv::Mat lanczos4{};
   assert(loadedImage.data);
 
-  // cv::resize(loadedImage, nearest, cv::Size(), 0.75, 0.75, cv::INTER_NEAREST);
-  
-  // cv::resize(loadedImage, linear, cv::Size(), 0.75, 0.75, cv::INTER_LINEAR);
-  // cv::resize(loadedImage, area, cv::Size(), 0.75, 0.75, cv::INTER_AREA);
-  // cv::resize(loadedImage, cubic, cv::Size(), 0.75, 0.75, cv::INTER_CUBIC);
-  // cv::resize(loadedImage, lanczos4, cv::Size(), 0.75, 0.75, cv::INTER_LANCZOS4);
   
   std::vector<Centroid> centroidVector{createCentroids(pixelVector, 3)};
 
