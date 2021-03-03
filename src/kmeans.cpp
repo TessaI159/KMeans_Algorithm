@@ -49,28 +49,37 @@ bool updateCentroidOwnership(std::vector<Centroid> & centroidVector,
 {
   bool updated = false;
   // int index{0};
-  // std::size_t pixelVectorSize{pixelVector.size()};
-  double totalTime{0};
+  std::size_t pixelVectorSize{pixelVector.size()};
+  double distancesTotal{0};
+  double swapsTotal{0};
+  int numSwaps{0};
   for (auto pixel : pixelVector)
     {
       // ++index;
       // std::cout << index << "/" << pixelVectorSize << "\n";
       double distances[centroidVector.size()];
-
+      clock_t distancesStart{clock()};
       for(std::size_t i{0}; i < centroidVector.size(); ++i)
 	{
 	  distances[i] = centroidVector[i].distanceFromPixel(&pixel);
 	}
-
+      clock_t distancesEnd{clock()};
+      distancesTotal += static_cast<double>(distancesEnd - distancesStart);
       if(pixel.ownedBy != smallestElement(distances, centroidVector.size()))
 	{
+	  ++numSwaps;
+	  clock_t swapsStart{clock()};
 	  updated = true;
-	  setSwap(centroidVector[pixel.ownedBy].getPixelByID(pixel.id),
-		  smallestElement(distances, centroidVector.size()));
+	  swap(centroidVector, &pixel, smallestElement(distances, centroidVector.size()));
+	  clock_t swapsEnd{clock()};
+	  swapsTotal += static_cast<double>(swapsEnd - swapsStart);
 	}
     }
-
-  runSwaps(centroidVector, pixelVector);
+  
+  double distancesAverage = (distancesTotal / pixelVectorSize) / static_cast<double>(CLOCKS_PER_SEC);
+  double swapsAverage = (swapsTotal / numSwaps) / static_cast<double>(CLOCKS_PER_SEC);
+  std::cout << "Distance check took an average of: " << distancesAverage << " per pixel.\n";
+  std::cout << "Swaps took an average of: " << swapsAverage << " per pixel.\n";
   return updated;
 }
 
@@ -96,25 +105,8 @@ int smallestElement(double distances[], std::size_t size)
   return smallestElementIndex;
 }
 
-void setSwap(Pixel* pixel_ptr, int centroidToSwapID)
-{
-  (*pixel_ptr).needsSwapped = true;
-  (*pixel_ptr).swapTo = centroidToSwapID;
-}
 
-void runSwaps(std::vector<Centroid> &centroidVector,
-	      const std::vector<Pixel> &pixelVector)
-{
-  for(auto pixel : pixelVector)
-    {
-      if(pixel.needsSwapped)
-	{
-	  swap(centroidVector, centroidVector[pixel.ownedBy].getPixelByID(pixel.id));
-	}
-    }
-}
-
-bool swap(std::vector<Centroid> &centroidVector, Pixel* pixel_ptr)
+bool swap(std::vector<Centroid> &centroidVector, Pixel* pixel_ptr, int centroidToSwapID)
 {
   (*pixel_ptr).needsSwapped = false;
   Pixel *tempPixel_ptr {nullptr};
@@ -123,7 +115,7 @@ bool swap(std::vector<Centroid> &centroidVector, Pixel* pixel_ptr)
     {
       return false;
     }
-  centroidVector[pixel_ptr->swapTo].addPixel(tempPixel_ptr);
+  centroidVector[centroidToSwapID].addPixel(tempPixel_ptr);
   (*pixel_ptr).swapTo = -1;
   return true;
 }

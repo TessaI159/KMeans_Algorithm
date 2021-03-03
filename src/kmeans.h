@@ -18,10 +18,6 @@ bool updateCentroids(std::vector<Centroid> &centroidVector,
 
 int smallestElement(double distances[], std::size_t size);
 
-void setSwap(Pixel* pixel, int centroidToSwapID);
-
-void runSwaps(std::vector<Centroid> &centroidVector, const std::vector<Pixel> &pixelVector);
-
-bool swap(std::vector<Centroid> &centroidVector, Pixel* pixel);
+bool swap(std::vector<Centroid> &centroidVector, Pixel* pixel, int centroidToSwapID);
 
 #endif

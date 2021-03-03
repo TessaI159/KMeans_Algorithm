@@ -62,44 +62,44 @@ BOOST_AUTO_TEST_CASE(smallest_element)
   BOOST_CHECK_EQUAL(smallestElement(test7, 50), 10);
 }
 
-BOOST_AUTO_TEST_CASE(pixel_swap)
-{
-  std::cout << "\tpixel swap\n";
+// BOOST_AUTO_TEST_CASE(pixel_swap)
+// {
+//   std::cout << "\tpixel swap\n";
 
-  std::vector<Pixel> pixelVector{};
+//   std::vector<Pixel> pixelVector{};
 
-  pixelVector.push_back(Pixel{163,245,147, 0});
-  pixelVector.push_back(Pixel{92,55,93, 1});
-  pixelVector.push_back(Pixel{239,16,1, 2});
-  pixelVector.push_back(Pixel{177,24,116, 3});
+//   pixelVector.push_back(Pixel{163,245,147, 0});
+//   pixelVector.push_back(Pixel{92,55,93, 1});
+//   pixelVector.push_back(Pixel{239,16,1, 2});
+//   pixelVector.push_back(Pixel{177,24,116, 3});
 
-  std::vector<Centroid> centroidVector{createCentroids(pixelVector, 2)};
+//   std::vector<Centroid> centroidVector{createCentroids(pixelVector, 2)};
 
-  setSwap(&pixelVector[0], 1);
-  setSwap(&pixelVector[1], 1);
-  setSwap(&pixelVector[2], 0);
-  setSwap(&pixelVector[3], 0);
+//   setSwap(&pixelVector[0], 1);
+//   setSwap(&pixelVector[1], 1);
+//   setSwap(&pixelVector[2], 0);
+//   setSwap(&pixelVector[3], 0);
 
-  BOOST_CHECK_EQUAL(pixelVector[0].needsSwapped, true);
-  BOOST_CHECK_EQUAL(pixelVector[1].needsSwapped, true);
-  BOOST_CHECK_EQUAL(pixelVector[2].needsSwapped, true);
-  BOOST_CHECK_EQUAL(pixelVector[3].needsSwapped, true);
-  BOOST_CHECK_EQUAL(pixelVector[0].swapTo, 1);
-  BOOST_CHECK_EQUAL(pixelVector[1].swapTo, 1);
-  BOOST_CHECK_EQUAL(pixelVector[2].swapTo, 0);
-  BOOST_CHECK_EQUAL(pixelVector[3].swapTo, 0);
+//   BOOST_CHECK_EQUAL(pixelVector[0].needsSwapped, true);
+//   BOOST_CHECK_EQUAL(pixelVector[1].needsSwapped, true);
+//   BOOST_CHECK_EQUAL(pixelVector[2].needsSwapped, true);
+//   BOOST_CHECK_EQUAL(pixelVector[3].needsSwapped, true);
+//   BOOST_CHECK_EQUAL(pixelVector[0].swapTo, 1);
+//   BOOST_CHECK_EQUAL(pixelVector[1].swapTo, 1);
+//   BOOST_CHECK_EQUAL(pixelVector[2].swapTo, 0);
+//   BOOST_CHECK_EQUAL(pixelVector[3].swapTo, 0);
 
-  runSwaps(centroidVector, pixelVector);
+//   runSwaps(centroidVector, pixelVector);
 
-  BOOST_CHECK_EQUAL(pixelVector[0].needsSwapped, false);
-  BOOST_CHECK_EQUAL(pixelVector[1].needsSwapped, false);
-  BOOST_CHECK_EQUAL(pixelVector[2].needsSwapped, false);
-  BOOST_CHECK_EQUAL(pixelVector[3].needsSwapped, false);
-  BOOST_CHECK_EQUAL(pixelVector[0].swapTo, -1);
-  BOOST_CHECK_EQUAL(pixelVector[1].swapTo, -1);
-  BOOST_CHECK_EQUAL(pixelVector[2].swapTo, -1);
-  BOOST_CHECK_EQUAL(pixelVector[3].swapTo, -1);
-}
+//   BOOST_CHECK_EQUAL(pixelVector[0].needsSwapped, false);
+//   BOOST_CHECK_EQUAL(pixelVector[1].needsSwapped, false);
+//   BOOST_CHECK_EQUAL(pixelVector[2].needsSwapped, false);
+//   BOOST_CHECK_EQUAL(pixelVector[3].needsSwapped, false);
+//   BOOST_CHECK_EQUAL(pixelVector[0].swapTo, -1);
+//   BOOST_CHECK_EQUAL(pixelVector[1].swapTo, -1);
+//   BOOST_CHECK_EQUAL(pixelVector[2].swapTo, -1);
+//   BOOST_CHECK_EQUAL(pixelVector[3].swapTo, -1);
+// }
 
 BOOST_AUTO_TEST_CASE(centroid_updates)
 {
