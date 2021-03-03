@@ -8,3 +8,7 @@
 *.info
 coverage_info/
 *.jpg
+notes.txt
+*.sh
+*.jpeg
+*.png

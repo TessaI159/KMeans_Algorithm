@@ -49,37 +49,37 @@ bool updateCentroidOwnership(std::vector<Centroid> & centroidVector,
 {
   bool updated = false;
   // int index{0};
-  std::size_t pixelVectorSize{pixelVector.size()};
-  double distancesTotal{0};
-  double swapsTotal{0};
-  int numSwaps{0};
+  // std::size_t pixelVectorSize{pixelVector.size()};
+  // double distancesTotal{0};
+  // double swapsTotal{0};
+  // int numSwaps{0};
   for (auto pixel : pixelVector)
     {
       // ++index;
       // std::cout << index << "/" << pixelVectorSize << "\n";
       double distances[centroidVector.size()];
-      clock_t distancesStart{clock()};
+      // clock_t distancesStart{clock()};
       for(std::size_t i{0}; i < centroidVector.size(); ++i)
 	{
 	  distances[i] = centroidVector[i].distanceFromPixel(&pixel);
 	}
-      clock_t distancesEnd{clock()};
-      distancesTotal += static_cast<double>(distancesEnd - distancesStart);
+      // clock_t distancesEnd{clock()};
+      // distancesTotal += static_cast<double>(distancesEnd - distancesStart);
       if(pixel.ownedBy != smallestElement(distances, centroidVector.size()))
 	{
-	  ++numSwaps;
-	  clock_t swapsStart{clock()};
+	  // ++numSwaps;
+	  // clock_t swapsStart{clock()};
 	  updated = true;
 	  swap(centroidVector, &pixel, smallestElement(distances, centroidVector.size()));
-	  clock_t swapsEnd{clock()};
-	  swapsTotal += static_cast<double>(swapsEnd - swapsStart);
+	  // clock_t swapsEnd{clock()};
+	  // swapsTotal += static_cast<double>(swapsEnd - swapsStart);
 	}
     }
   
-  double distancesAverage = (distancesTotal / pixelVectorSize) / static_cast<double>(CLOCKS_PER_SEC);
-  double swapsAverage = (swapsTotal / numSwaps) / static_cast<double>(CLOCKS_PER_SEC);
-  std::cout << "Distance check took an average of: " << distancesAverage << " per pixel.\n";
-  std::cout << "Swaps took an average of: " << swapsAverage << " per pixel.\n";
+  // double distancesAverage = (distancesTotal / pixelVectorSize) / static_cast<double>(CLOCKS_PER_SEC);
+  // double swapsAverage = (swapsTotal / numSwaps) / static_cast<double>(CLOCKS_PER_SEC);
+  // std::cout << "Distance check took an average of: " << distancesAverage << " per pixel.\n";
+  // std::cout << "Swaps took an average of: " << swapsAverage << " per pixel.\n";
   return updated;
 }
 
