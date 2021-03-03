@@ -33,7 +33,7 @@ std::vector<Centroid> createCentroids(std::vector<Pixel> &pixelVector, int k)
 	  centroidVector[centroidVector.size() - 1].addPixel(&pixelVector[i]);
 	}
     }
-  
+
   return centroidVector;
 }
 
@@ -48,13 +48,20 @@ bool updateCentroidOwnership(std::vector<Centroid> & centroidVector,
 			     const std::vector<Pixel> &pixelVector)
 {
   bool updated = false;
+  // int index{0};
+  // std::size_t pixelVectorSize{pixelVector.size()};
+  double totalTime{0};
   for (auto pixel : pixelVector)
     {
+      // ++index;
+      // std::cout << index << "/" << pixelVectorSize << "\n";
       double distances[centroidVector.size()];
+
       for(std::size_t i{0}; i < centroidVector.size(); ++i)
 	{
 	  distances[i] = centroidVector[i].distanceFromPixel(&pixel);
 	}
+
       if(pixel.ownedBy != smallestElement(distances, centroidVector.size()))
 	{
 	  updated = true;
@@ -62,6 +69,7 @@ bool updateCentroidOwnership(std::vector<Centroid> & centroidVector,
 		  smallestElement(distances, centroidVector.size()));
 	}
     }
+
   runSwaps(centroidVector, pixelVector);
   return updated;
 }
@@ -105,7 +113,7 @@ void runSwaps(std::vector<Centroid> &centroidVector,
 	}
     }
 }
- 
+
 bool swap(std::vector<Centroid> &centroidVector, Pixel* pixel_ptr)
 {
   (*pixel_ptr).needsSwapped = false;

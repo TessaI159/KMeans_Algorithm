@@ -146,18 +146,18 @@ BOOST_AUTO_TEST_CASE(centroid_updates)
   BOOST_CHECK_EQUAL(pixelVector[16].ownedBy, 0);
   BOOST_CHECK_EQUAL(pixelVector[19].ownedBy, 0);
 
-  std::cout << "ID\t\tPixel\t\tCentroid ID\t\tCentroid Location\n";
+  // std::cout << "ID\t\tPixel\t\tCentroid ID\t\tCentroid Location\n";
 
-  for(auto &pixel : pixelVector)
-    {
-      std::cout << pixel.id << "\t\t";
-      std::cout << pixel.r << ", " << pixel.g << ", " << pixel.b << "\t\t";
-      std::cout << pixel.ownedBy << "\t\t";
-      std::cout << centroidVector[pixel.ownedBy].getLocation().r << ", ";
-      std::cout << centroidVector[pixel.ownedBy].getLocation().g << ", ";
-      std::cout << centroidVector[pixel.ownedBy].getLocation().b;
-      std::cout << "\n";
-    }
+  // for(auto &pixel : pixelVector)
+  //   {
+  //     std::cout << pixel.id << "\t\t";
+  //     std::cout << pixel.r << ", " << pixel.g << ", " << pixel.b << "\t\t";
+  //     std::cout << pixel.ownedBy << "\t\t";
+  //     std::cout << centroidVector[pixel.ownedBy].getLocation().r << ", ";
+  //     std::cout << centroidVector[pixel.ownedBy].getLocation().g << ", ";
+  //     std::cout << centroidVector[pixel.ownedBy].getLocation().b;
+  //     std::cout << "\n";
+  //   }
 }
 
 BOOST_AUTO_TEST_SUITE_END()

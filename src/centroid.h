@@ -22,6 +22,7 @@ public:
   void addPixel(Pixel *pixel_ptr);
   Pixel* releasePixel(int pixelID);
   Pixel* getPixelByID(int pixelID);
+  void printLocation(bool newLine);
 };
 
 #endif

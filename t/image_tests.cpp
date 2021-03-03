@@ -1,4 +1,4 @@
-o#include "../src/centroid.h"
+#include "../src/centroid.h"
 #include "../src/pixel.h"
 #include "../src/image.h"
 #define BOOST_TEST_MODULE ImageTests

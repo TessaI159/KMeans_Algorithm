@@ -108,3 +108,16 @@ Pixel* Centroid::getPixelByID(int pixelID)
     }
   return nullptr;
 }
+
+void Centroid::printLocation(bool newLine)
+{
+  std::cout << "Centroid " <<  m_id << " at location: (";
+  std::cout << m_location.r << ", ";
+  std::cout << m_location.g << ", ";
+  std::cout << m_location.b << ")";
+  std::cout << " with " << m_ownedPixels_ptr.size() << " pixels.";
+  if(newLine)
+    {
+      std::cout << "\n";
+    }
+}
