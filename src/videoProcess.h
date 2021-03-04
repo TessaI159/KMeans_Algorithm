@@ -5,8 +5,8 @@
 
 #include <string>
 
-void processVideo(std::string filename, int centroids, double ratio);
+void processVideo(std::string filename, int centroids);
 void processVideo(std::string filename);
-void processFrame(cv::Mat frame, int centroids, double ratio);
+void processFrame(cv::Mat *frame, int centroids, int pixels);
 
 #endif

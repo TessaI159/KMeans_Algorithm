@@ -9,8 +9,9 @@
 #include <iostream>
 #include <string>
 #include <vector>
+#include <cmath>
 
-void processVideo(std::string filename, int centroids, double ratio)
+void processVideo(std::string filename, int centroids)
 {
   cv::VideoCapture video(filename, cv::CAP_FFMPEG);
   assert(video.isOpened());
@@ -20,20 +21,18 @@ void processVideo(std::string filename, int centroids, double ratio)
 
   while(true)
     {
-      // clock_t frameCreationStart{clock()};
       cv::Mat frame;
       video >> frame;
-      // clock_t frameCreationEnd{clock()};
-      // std::cout << "Frame creation: " <<  (static_cast<double>(frameCreationEnd
-      // 							   - frameCreationStart) /
-      // 				       static_cast<double>(CLOCKS_PER_SEC)) << "\n";
+      int pixels {frame.rows * frame.cols};
+      
       if(frame.empty())
 	{
 	  break;
 	}
+      
       std::cout << ++index << "/" << frames << "\n";
       clock_t start{clock()};
-      processFrame(frame, centroids, ratio);
+      processFrame(&frame, centroids, pixels);
       clock_t end{clock()};
 
       std::cout << "Frame time: " <<  (static_cast<double>(end - start) /
@@ -44,25 +43,25 @@ void processVideo(std::string filename, int centroids, double ratio)
 
 void processVideo(std::string filename)
 {
-  processVideo(filename, 3, 0.08);
+  processVideo(filename, 3);
 }
 
-void processFrame(cv::Mat frame, int centroids, double ratio)
+void processFrame(cv::Mat* frame, int centroids, int pixels)
 {
+  int targetPixels{5000};
+  int minPixels{2500};
   cv::Mat resizedFrame{};
-
-  cv::resize(frame, resizedFrame, cv::Size(), ratio, ratio, cv::INTER_LANCZOS4);
+  double ratio{0.08};
+  if(frame->cols * frame->rows * ratio * ratio > targetPixels ||
+     frame->cols * frame->rows * ratio * ratio < minPixels)
+    {
+      ratio = sqrt(static_cast<double>(targetPixels)/(static_cast<double>(frame->rows) * static_cast<double>(frame->cols)));
+    }
+  cv::resize(*frame, resizedFrame, cv::Size(), ratio, ratio, cv::INTER_LANCZOS4);
   assert(resizedFrame.data);
 
   std::vector<Pixel> pixelVector{scanImage(resizedFrame)};
   std::vector<Centroid> centroidVector{createCentroids(pixelVector, centroids)};
 
-  clock_t updateStart{clock()};
   while(updateCentroids(centroidVector, pixelVector)){}
-  clock_t updateEnd{clock()};
-
-  // std::cout << "Centroid update: " <<  (static_cast<double>(updateEnd - updateStart) /
-  //            static_cast<double>(CLOCKS_PER_SEC)) << "\n";
-
-
 }

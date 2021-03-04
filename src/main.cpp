@@ -3,7 +3,7 @@
 // TODO
 // Intelligent auto number of centroids
 // Auto optimal resize
-// Automatic conversion of video into compatible format/codec
+// Automatic conversion of video into compatible format/codec with ffmpeg library
 
 int main()
 {
