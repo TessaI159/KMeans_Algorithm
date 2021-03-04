@@ -12,3 +12,8 @@ notes.txt
 *.sh
 *.jpeg
 *.png
+*.mkv
+*.avi
+*.webm
+*.mp4
+OpenCVPaths

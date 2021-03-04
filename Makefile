@@ -9,7 +9,7 @@ CXXFLAGS=-g -Wall -std=c++14 -c --coverage -I/usr/local/include/opencv4/
 LDFLAGS=-g --coverage
 LDLIBS=-L/usr/local/lib/OpenCV -L/usr/lib/x86_64-linux-gnu -L$(SRC_DIR) \
 -l:libboost_unit_test_framework.a -l:libopencv_core.so -l:libopencv_imgproc.so \
--l:libopencv_imgcodecs.so -l:libopencv_video.so -l:libopencv_videoio.so -l:$(LIB_NAME).a
+-l:libopencv_imgcodecs.so -l:libopencv_video.so -l:libopencv_videoio.so -l:libopencv_highgui.so -l:$(LIB_NAME).a
 
 
 LIB_NAME=kmeans
@@ -43,7 +43,7 @@ export TEST_DIR
 #
 #-----------
 
-all: coverage_clean main test
+all: coverage_clean main
 
 no_tests: coverage_clean main
 
