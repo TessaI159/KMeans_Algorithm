@@ -16,4 +16,6 @@ notes.txt
 *.avi
 *.webm
 *.mp4
+*.ods#
+*.python*
 OpenCVPaths

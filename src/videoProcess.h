@@ -7,6 +7,6 @@
 
 void processVideo(std::string filename, int centroids);
 void processVideo(std::string filename);
-void processFrame(cv::Mat *frame, int centroids, int pixels);
+void processFrame(cv::Mat *frame, int centroids);
 
 #endif

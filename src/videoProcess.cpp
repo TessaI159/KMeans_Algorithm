@@ -46,12 +46,14 @@ void processVideo(std::string filename)
   processVideo(filename, 3);
 }
 
-void processFrame(cv::Mat* frame, int centroids, int pixels)
+void processFrame(cv::Mat* frame, int centroids)
 {
   int targetPixels{5000};
   int minPixels{2500};
+  
   cv::Mat resizedFrame{};
   double ratio{0.08};
+  
   if(frame->cols * frame->rows * ratio * ratio > targetPixels ||
      frame->cols * frame->rows * ratio * ratio < minPixels)
     {

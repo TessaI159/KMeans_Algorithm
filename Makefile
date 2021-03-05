@@ -9,7 +9,7 @@ CXXFLAGS=-g -Wall -std=c++14 -c --coverage -I/usr/local/include/opencv4/
 LDFLAGS=-g --coverage
 LDLIBS=-L/usr/local/lib/OpenCV -L/usr/lib/x86_64-linux-gnu -L$(SRC_DIR) \
 -l:libboost_unit_test_framework.a -l:libopencv_core.so -l:libopencv_imgproc.so \
--l:libopencv_imgcodecs.so -l:libopencv_video.so -l:libopencv_videoio.so -l:libopencv_highgui.so -l:$(LIB_NAME).a
+-l:libopencv_imgcodecs.so -l:libopencv_video.so -l:libopencv_videoio.so -l:libopencv_highgui.so # -l:$(LIB_NAME).a
 
 
 LIB_NAME=kmeans
@@ -45,13 +45,13 @@ export TEST_DIR
 
 all: coverage_clean main
 
-no_tests: coverage_clean main
+# no_tests: coverage_clean main
 
 main:
 	@$(MAKE) -C $(SRC_DIR)
 
-test: main
-	@$(MAKE) -C $(TEST_DIR)
+# test: main
+#	@$(MAKE) -C $(TEST_DIR)
 
 clean: main_clean test_clean
 	@$(RM) *.o *.run *.a *.info *.gcda *.gcno *.json; lcov --no-external -d $(PWD) -z -q
@@ -65,8 +65,8 @@ test_clean:
 coverage_clean:
 	@$(RM) -rf *.gcno *.gcda src/*.gcda src/*.gcno t/*.gcda t/*.gcno coverage_info
 
-check: all
-	@./centroid_tests.run; ./image_tests.run; ./kmeans_tests.run
+# check: all
+#	@./centroid_tests.run; ./image_tests.run; ./kmeans_tests.run
 
 coverage: clean check
 	@lcov -c -d $(PWD) -o coverage.info -q --no-external && genhtml -o coverage_info coverage.info && firefox ./coverage_info/index.html
