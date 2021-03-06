@@ -9,8 +9,6 @@ struct Pixel
   int b{0};
   int id{-1};
   int ownedBy{-1};
-  int swapTo{-1};
-  bool needsSwapped{false};
 };
 
 #endif

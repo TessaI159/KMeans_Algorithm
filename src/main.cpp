@@ -8,17 +8,17 @@
 // Figure out default variables for a forward-declared function
 // Class constructor initialization lists
 // New, delete, smart pointers
+// Trim any pure blck frames off the beginning of the video
 
 
 // Distortion: It is calculated as the average of the squared distances from the
 // cluster centers of the respective clusters. Typically, the Euclidean distance metric is used.
-// Inertia: It is the sum of squared distances of samples to their closest cluster center.
 
 // For the elbow test use distortion, current point calculation, and 2..10 centroids inclusive
 
 
 int main()
 {
-  processVideo("/home/tess/Code/KMeans/assets/color.avi");
+  processVideo("/home/tess/Code/KMeans/assets/color.avi", -1);
   return 0;
 }
