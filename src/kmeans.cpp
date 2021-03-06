@@ -62,7 +62,6 @@ bool updateCentroidOwnership(std::vector<Centroid> & centroidVector,
 	  swap(centroidVector, &pixel, smallestElement(distances, centroidVector.size()));
 	}
     }
-
   return updated;
 }
 

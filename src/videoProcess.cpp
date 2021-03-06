@@ -12,6 +12,7 @@
 #include <cmath>
 #include <math.h>
 #include <array>
+#include <map>
 
 void processVideo(std::string filename, int centroids)
 {
@@ -51,7 +52,7 @@ void processVideo(std::string filename, int centroids)
       //        {
       //          break;
       //        }
-      processFrame(&frame, centroids);
+      processFrame(&resizedFrame, centroids);
       index++;
     }
   video.release();
@@ -61,13 +62,21 @@ void processFrame(cv::Mat* frame, int centroids)
 {
   std::vector<Pixel> pixelVector{scanImage(*frame)};
   std::vector<Centroid> centroidVector{createCentroids(pixelVector, centroids)};
-
-  while(updateCentroids(centroidVector, pixelVector)){}
+  int maxIter{20};
+  int currentIter{1};
+  
+  while(updateCentroids(centroidVector, pixelVector))
+    {
+      if(currentIter >= maxIter)
+	{
+	  break;
+	}
+      currentIter++;
+    }
 }
 
 int findElbow(std::string filename)
 {
-
   cv::VideoCapture video(filename, cv::CAP_FFMPEG);
   assert(video.isOpened());
 
@@ -78,10 +87,14 @@ int findElbow(std::string filename)
 
   int currentFrame{1};
   int seconds{5};
-  int frames(video.get(cv::CAP_PROP_FRAME_COUNT));
+  // int frames(video.get(cv::CAP_PROP_FRAME_COUNT));
   double fps{video.get(cv::CAP_PROP_FPS)};
   fps = std::round(fps);
-  int totalElbow{0};
+  std::map<int, int> totalElbows{};
+  for(int i{1}; i < 11; ++i)
+    {
+      totalElbows[i] = 0;
+    }
 
   while(true)
     {
@@ -95,16 +108,22 @@ int findElbow(std::string filename)
 
       if(fmod(static_cast<double>(currentFrame), fps * seconds) == 0)
 	{
-	  std::cout << currentFrame << "\n";
 	  cv::resize(frame, resizedFrame, cv::Size(), ratio, ratio, cv::INTER_LANCZOS4);
-	  totalElbow += findElbowFrame(&resizedFrame);
-	  std::cout << "Total elbow: " << totalElbow << "\n";
+	  totalElbows[findElbowFrame(&resizedFrame)]++;
 	}
       ++currentFrame;
     }
+  int largest{totalElbows[1]};
+  int largestIndex{1};
+  for(std::size_t i{2}; i < totalElbows.size(); ++i)
+    {
+      if(totalElbows[i] > largest)
+	{
+	  largestIndex = i;
+	}
+    }
   video.release();
-  return static_cast<int>(totalElbow / (frames * fps)) + 1;
-  return 0;
+  return largestIndex;
 }
 
 // I'm 99% sure there's a more elegant, less cpu and memory intensive way to do this

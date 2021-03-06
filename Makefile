@@ -5,7 +5,7 @@
 #-----------
 
 CXX=g++
-CXXFLAGS=-g -Wall -std=c++14 -c --coverage -I/usr/local/include/opencv4/
+CXXFLAGS=-g -Wall -std=c++17 -c --coverage -I/usr/local/include/opencv4/
 LDFLAGS=-g --coverage
 LDLIBS=-L/usr/local/lib/OpenCV -L/usr/lib/x86_64-linux-gnu -L$(SRC_DIR) \
 -l:libboost_unit_test_framework.a -l:libopencv_core.so -l:libopencv_imgproc.so \

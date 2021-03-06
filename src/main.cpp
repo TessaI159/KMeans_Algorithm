@@ -19,6 +19,6 @@
 
 int main()
 {
-  processVideo("/home/tess/Code/KMeans/assets/nemo.avi", -1);
+  processVideo("/home/tess/Code/KMeans/assets/color2.avi", -1);
   return 0;
 }
