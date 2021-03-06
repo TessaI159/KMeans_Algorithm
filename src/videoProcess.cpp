@@ -28,8 +28,8 @@ void processVideo(std::string filename, int centroids)
 			   video.get(cv::CAP_PROP_FRAME_WIDTH),
 			   video.get(cv::CAP_PROP_FRAME_HEIGHT));
 
-  // int index{0};
-  // int frames(video.get(cv::CAP_PROP_FRAME_COUNT));
+  int index{0};
+  int frames(video.get(cv::CAP_PROP_FRAME_COUNT));
   cv::Mat frame{};
   // cv::namedWindow("Processing", cv::WINDOW_AUTOSIZE);
   cv::Mat resizedFrame{};
@@ -44,14 +44,15 @@ void processVideo(std::string filename, int centroids)
 	}
       cv::resize(frame, resizedFrame, cv::Size(), ratio, ratio, cv::INTER_LANCZOS4);
       assert(resizedFrame.data);
+      std::cout << index << "/" << frames << "\n";
       // cv::imshow("Processing", frame);
       // char c{static_cast<char>(cv::waitKey(25))};
       // if(c == 27)
       //        {
       //          break;
       //        }
-
       processFrame(&frame, centroids);
+      index++;
     }
   video.release();
 }
@@ -79,6 +80,7 @@ int findElbow(std::string filename)
   int seconds{5};
   int frames(video.get(cv::CAP_PROP_FRAME_COUNT));
   double fps{video.get(cv::CAP_PROP_FPS)};
+  fps = std::round(fps);
   int totalElbow{0};
 
   while(true)
@@ -96,6 +98,7 @@ int findElbow(std::string filename)
 	  std::cout << currentFrame << "\n";
 	  cv::resize(frame, resizedFrame, cv::Size(), ratio, ratio, cv::INTER_LANCZOS4);
 	  totalElbow += findElbowFrame(&resizedFrame);
+	  std::cout << "Total elbow: " << totalElbow << "\n";
 	}
       ++currentFrame;
     }
@@ -104,14 +107,15 @@ int findElbow(std::string filename)
   return 0;
 }
 
+// I'm 99% sure there's a more elegant, less cpu and memory intensive way to do this
 int findElbowFrame(cv::Mat* frame)
 {
   std::vector<Pixel> pixelVector{scanImage(*frame)};
   std::vector<Centroid> centroidVector{};
   std::vector<double> distortionVector{};
-  
+  std::vector<double> absoluteChange{};
 
-  for(int i{1}; i <= 10; ++i)
+  for(int i{1}; i <= 10 + 1; ++i)
     {
       centroidVector = createCentroids(pixelVector, i);
       while(updateCentroids(centroidVector, pixelVector)){}
@@ -123,9 +127,22 @@ int findElbowFrame(cv::Mat* frame)
 	}
       averageDistortion /= centroidVector.size();
       distortionVector.push_back(averageDistortion);
-
+    }
+  
+  for(std::size_t i{0}; i < distortionVector.size() - 1; ++i)
+    {
+      absoluteChange.push_back(distortionVector[i] - distortionVector[i+1]);
     }
 
+  for(std::size_t i{1}; i < absoluteChange.size() - 1; ++i)
+    {
+      if(absoluteChange[i] / absoluteChange[0] <= 0.065)
+	{
+	  return i + 1;
+	}
+    }
+  
+  
   return 0;
 }
 
