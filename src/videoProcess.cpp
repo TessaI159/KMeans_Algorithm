@@ -16,9 +16,8 @@
 
 void processVideo(std::string filename, int centroids)
 {
-  if(centroids < 1 || centroids > 10)
+  if(centroids < 1 || centroids > 6)
     {
-      // centroids = 3;
       centroids = findElbow(filename);
     }
 
@@ -34,6 +33,7 @@ void processVideo(std::string filename, int centroids)
   cv::Mat frame{};
   // cv::namedWindow("Processing", cv::WINDOW_AUTOSIZE);
   cv::Mat resizedFrame{};
+  int last{-1};
 
   while(true)
     {
@@ -45,7 +45,7 @@ void processVideo(std::string filename, int centroids)
 	}
       cv::resize(frame, resizedFrame, cv::Size(), ratio, ratio, cv::INTER_LANCZOS4);
       assert(resizedFrame.data);
-      std::cout << index << "/" << frames << "\n";
+      // std::cout << index << "/" << frames << "\n";
       // cv::imshow("Processing", frame);
       // char c{static_cast<char>(cv::waitKey(25))};
       // if(c == 27)
@@ -54,7 +54,14 @@ void processVideo(std::string filename, int centroids)
       //        }
       processFrame(&resizedFrame, centroids);
       index++;
+      double percentage = floor(static_cast<double>(static_cast<double>(index) / static_cast<double>(frames)) * 100);
+      if(percentage > last)
+	{
+	  last = static_cast<int>(percentage);
+	  std::cout << percentage << "%\n";
+	}
     }
+  std::cout << "100%\n";
   video.release();
 }
 
@@ -75,8 +82,10 @@ void processFrame(cv::Mat* frame, int centroids)
     }
 }
 
+// Split this into multiple functions
 int findElbow(std::string filename)
 {
+  
   cv::VideoCapture video(filename, cv::CAP_FFMPEG);
   assert(video.isOpened());
 
@@ -86,16 +95,17 @@ int findElbow(std::string filename)
   cv::Mat resizedFrame{};
 
   int currentFrame{1};
-  int seconds{5};
-  // int frames(video.get(cv::CAP_PROP_FRAME_COUNT));
-  double fps{video.get(cv::CAP_PROP_FPS)};
-  fps = std::round(fps);
+  double percent{0.5};
+  int frames(video.get(cv::CAP_PROP_FRAME_COUNT));
   std::map<int, int> totalElbows{};
+  
   for(int i{1}; i < 11; ++i)
     {
       totalElbows[i] = 0;
     }
-
+  
+  std::cout << "Testing " << percent << "% of frames to find optimal number of centroids.\n";
+  
   while(true)
     {
       cv::Mat frame;
@@ -106,8 +116,9 @@ int findElbow(std::string filename)
 	  break;
 	}
 
-      if(fmod(static_cast<double>(currentFrame), fps * seconds) == 0)
+      if(fmod(static_cast<double>(currentFrame), round(100.0 / percent)) == 0)
 	{
+	  std::cout << round((static_cast<double>(currentFrame) / static_cast<double>(frames)) * 100) << "% complete\n";
 	  cv::resize(frame, resizedFrame, cv::Size(), ratio, ratio, cv::INTER_LANCZOS4);
 	  totalElbows[findElbowFrame(&resizedFrame)]++;
 	}
@@ -123,6 +134,7 @@ int findElbow(std::string filename)
 	}
     }
   video.release();
+  std::cout << "100% complete.\n";
   return largestIndex;
 }
 
