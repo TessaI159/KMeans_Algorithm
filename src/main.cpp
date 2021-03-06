@@ -2,6 +2,8 @@
 
 #include <opencv2/opencv.hpp>
 
+#include <chrono>
+
 // TODO
 // Intelligent auto number of centroids using elbow method - COMPLETED
 // Auto optimal resize - COMPLETED
@@ -16,23 +18,36 @@
 
 int main()
 {
+
+
+
   bool statistics{true};
   if (statistics)
     {
-      std::clock_t startTime{clock()};
+      using std::chrono::high_resolution_clock;
+      using std::chrono::duration_cast;
+      using std::chrono::duration;
+      using std::chrono::milliseconds;
+      
+      auto startTime = high_resolution_clock::now();
       processVideo("/home/tess/Code/KMeans/assets/color2.avi", -1);
-      std::clock_t endTime{clock()};
+      auto endTime = high_resolution_clock::now();
 
-      double processTime{static_cast<double>((endTime - startTime) / CLOCKS_PER_SEC)};
+      duration<double, std::milli> processTime = duration_cast<milliseconds>(endTime - startTime);
+
       cv::VideoCapture video("/home/tess/Code/KMeans/assets/color2.avi", cv::CAP_FFMPEG);
       assert(video.isOpened());
-      double videoLength{video.get(cv::CAP_PROP_FRAME_COUNT) / video.get(cv::CAP_PROP_FPS)};
-      double averageTimePerSecond{processTime / videoLength};
-      double averageTimePerFrame{processTime / video.get(cv::CAP_PROP_FRAME_COUNT)};
-      std::cout << "Process took: " << processTime << " seconds for a video that is ";
-      std::cout << videoLength << " seconds long.\n";
-      std::cout << "There was an average processing time of " << averageTimePerSecond << " seconds per 1 second of video, ";
-      std::cout << " which indicates an average processing time of " << averageTimePerFrame << " seconds per frame.\n";
+
+      double frames{video.get(cv::CAP_PROP_FRAME_COUNT)};
+      double fps{video.get(cv::CAP_PROP_FPS)};
+      double totalVideoDuration{frames / fps};
+      double processTimeDouble{processTime.count() / 1000};
+
+      std::cout << "Process took a total of " << processTimeDouble << " seconds\n";
+      std::cout << "Process took a total of " << processTimeDouble / totalVideoDuration
+		<< " seconds per second of video\n";
+      std::cout << "Process took a total of " << processTimeDouble / frames
+		<< " seconds per frame\n";
     }
   else
     {

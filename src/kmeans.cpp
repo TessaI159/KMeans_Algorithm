@@ -1,12 +1,20 @@
 #include "kmeans.h"
 #include "pixel.h"
 #include "centroid.h"
+#include "constants.h"
 
 #include <vector>
 #include <iostream>
+#include <cassert>
 
 std::vector<Centroid> createCentroids(std::vector<Pixel> &pixelVector, int k)
 {
+  if(k <= 0 || k > MAX_CENTROIDS)
+    {
+      std::cout << k;
+      std::cerr << " Invalid number of centroids. Defaulting to 3\n";
+      k = 3;
+    }
   std::vector<Centroid> centroidVector{};
   int pixelsPerCentroid{static_cast<int>(pixelVector.size()) / k};
   int leftoverPixels{static_cast<int>(pixelVector.size()) % k};
@@ -32,7 +40,6 @@ std::vector<Centroid> createCentroids(std::vector<Pixel> &pixelVector, int k)
 	  centroidVector[centroidVector.size() - 1].addPixel(&pixelVector[i]);
 	}
     }
-
   return centroidVector;
 }
 
@@ -54,12 +61,19 @@ bool updateCentroidOwnership(std::vector<Centroid> & centroidVector,
       double distances[centroidVector.size()];
       for(std::size_t i{0}; i < centroidVector.size(); ++i)
 	{
-	  distances[i] = centroidVector[i].distanceFromPixel(&pixel);
+	  double tempDistance{centroidVector[i].distanceFromPixel(&pixel)};
+	  assert(tempDistance >= 0);
+	  distances[i] = tempDistance;
 	}
       if(pixel.ownedBy != smallestElement(distances, centroidVector.size()))
 	{
-	  updated = true;
-	  swap(centroidVector, &pixel, smallestElement(distances, centroidVector.size()));
+	  updated = swap(centroidVector, &pixel, smallestElement(distances, centroidVector.size()));
+	  if(!updated)
+	    {
+	      std::cerr << "Error while attempting to swap pixel ownership.";
+	      std::cerr << " Immediately moving to next centroid comparison without attempting further changes\n";
+	      continue;
+	    }
 	}
     }
   return updated;
@@ -90,11 +104,17 @@ int smallestElement(double distances[], std::size_t size)
 
 bool swap(std::vector<Centroid> &centroidVector, Pixel* pixel_ptr, int centroidToSwapID)
 {
+  if(pixel_ptr == nullptr)
+    {
+      std::cerr << "Pixel pointer passed to swap was nullptr\n";
+      return false;
+    }
   Pixel *tempPixel_ptr {nullptr};
   tempPixel_ptr = centroidVector[pixel_ptr->ownedBy].releasePixel(pixel_ptr->id);
 
   if(tempPixel_ptr == nullptr)
     {
+      std::cerr << "Unable to release pixel " << pixel_ptr->id << " from centroid " << pixel_ptr->ownedBy << "\n";
       return false;
     }
   centroidVector[centroidToSwapID].addPixel(tempPixel_ptr);

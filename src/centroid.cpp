@@ -3,6 +3,8 @@
 
 #include <math.h>
 #include <iostream>
+#include <cassert>
+#include <fstream>
 
 Centroid::Centroid() {};
 
@@ -22,11 +24,6 @@ void Centroid::setID(int id)
   m_id = id;
 }
 
-
-std::vector<Pixel *> Centroid::getOwnedPixels_ptr()
-{
-  return m_ownedPixels_ptr;
-}
 
 Pixel Centroid::getLocation()
 {
@@ -53,26 +50,24 @@ void Centroid::updateLocation()
   m_location.r = rAverage;
   m_location.g = gAverage;
   m_location.b = bAverage;
-
-  return;
 }
 
 double Centroid::distanceFromPixel(Pixel *pixel_ptr)
 {
-  double pixel_r = static_cast<double>(pixel_ptr->r);
-  double pixel_g = static_cast<double>(pixel_ptr->g);
-  double pixel_b = static_cast<double>(pixel_ptr->b);
-  double centroid_r = static_cast<double>(m_location.r);
-  double centroid_g = static_cast<double>(m_location.g);
-  double centroid_b = static_cast<double>(m_location.b);
+  if(pixel_ptr == nullptr)
+    {
+      std::cerr << "Null pixel encountered during distance computing\n";
+      return -1.0;
+    }
 
-  return (pow(centroid_r - pixel_r, 2) +
-	  pow(centroid_g - pixel_g, 2) +
-	  pow(centroid_b - pixel_b, 2));
+  return (pow(static_cast<double>(m_location.r) - static_cast<double>(pixel_ptr->r), 2) +
+	  pow(static_cast<double>(m_location.g) - static_cast<double>(pixel_ptr->g), 2) +
+	  pow(static_cast<double>(m_location.b) - static_cast<double>(pixel_ptr->b), 2));
 }
 
 void Centroid::addPixel(Pixel *pixel_ptr)
 {
+  assert(pixel_ptr != nullptr);
   m_ownedPixels_ptr.push_back(pixel_ptr);
   (*pixel_ptr).ownedBy = m_id;
 }
@@ -84,7 +79,7 @@ Pixel* Centroid::releasePixel(int pixelID)
     {
       if(m_ownedPixels_ptr[i]->id == pixelID)
 	{
-	  tempPixel = m_ownedPixels_ptr.at(i);
+	  tempPixel = m_ownedPixels_ptr[i];
 	  m_ownedPixels_ptr.erase(m_ownedPixels_ptr.begin() + i);
 	  (*tempPixel).ownedBy = -1;
 	  return tempPixel;
@@ -93,32 +88,16 @@ Pixel* Centroid::releasePixel(int pixelID)
   return nullptr;
 }
 
-Pixel* Centroid::getPixelByID(int pixelID)
+void Centroid::printLocation(bool newLine, std::ofstream& output)
 {
-  if(pixelID < 0)
-    {
-      return nullptr;
-    }
-  for(auto pixel : m_ownedPixels_ptr)
-    {
-      if(pixel->id == pixelID)
-	{
-	  return pixel;
-	}
-    }
-  return nullptr;
-}
-
-void Centroid::printLocation(bool newLine)
-{
-  std::cout << "Centroid " <<  m_id << " at location: (";
-  std::cout << m_location.r << ", ";
-  std::cout << m_location.g << ", ";
-  std::cout << m_location.b << ")";
-  std::cout << " with " << m_ownedPixels_ptr.size() << " pixels.";
+  output << "Centroid " <<  m_id << " at location: (";
+  output << m_location.r << ", ";
+  output << m_location.g << ", ";
+  output << m_location.b << ")";
+  output << " with " << m_ownedPixels_ptr.size() << " pixels.";
   if(newLine)
     {
-      std::cout << "\n";
+      output << "\n";
     }
 }
 
@@ -129,5 +108,6 @@ double Centroid::distortion()
     {
       totalDistance += distanceFromPixel(pixel);
     }
+
   return totalDistance;
 }

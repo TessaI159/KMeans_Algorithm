@@ -1,9 +1,12 @@
 #include "image.h"
 #include "pixel.h"
 
-#include <vector>
-
 #include <opencv2/opencv.hpp>
+
+#include <vector>
+#include <cassert>
+
+
 
  std::vector<Pixel> scanImage(cv::Mat &image)
 {
@@ -35,5 +38,6 @@
 	  pixelVector.push_back(tempPixel);
 	}
     }
+  assert(pixelVector.size() > 0);
   return pixelVector;
 }

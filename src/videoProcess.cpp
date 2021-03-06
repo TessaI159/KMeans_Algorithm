@@ -3,6 +3,7 @@
 #include "centroid.h"
 #include "kmeans.h"
 #include "image.h"
+#include "constants.h"
 
 #include <opencv2/opencv.hpp>
 
@@ -13,12 +14,15 @@
 #include <math.h>
 #include <array>
 #include <map>
+#include <fstream>
 
+// Refactor
 void processVideo(std::string filename, int centroids)
 {
-  if(centroids < 1 || centroids > 6)
+  if(centroids < 1 || centroids > MAX_CENTROIDS)
     {
       centroids = findElbow(filename);
+      std::cout << "Optimal number of centroids is: " << centroids << "\n";
     }
 
   cv::VideoCapture video(filename, cv::CAP_FFMPEG);
@@ -31,7 +35,6 @@ void processVideo(std::string filename, int centroids)
   int index{0};
   int frames(video.get(cv::CAP_PROP_FRAME_COUNT));
   cv::Mat frame{};
-  // cv::namedWindow("Processing", cv::WINDOW_AUTOSIZE);
   cv::Mat resizedFrame{};
   int last{-1};
 
@@ -43,18 +46,15 @@ void processVideo(std::string filename, int centroids)
 	{
 	  break;
 	}
+
       cv::resize(frame, resizedFrame, cv::Size(), ratio, ratio, cv::INTER_LANCZOS4);
       assert(resizedFrame.data);
-      // std::cout << index << "/" << frames << "\n";
-      // cv::imshow("Processing", frame);
-      // char c{static_cast<char>(cv::waitKey(25))};
-      // if(c == 27)
-      //        {
-      //          break;
-      //        }
-      processFrame(&resizedFrame, centroids);
+
+
+
       index++;
-      double percentage = floor(static_cast<double>(static_cast<double>(index) / static_cast<double>(frames)) * 100);
+      double percentage = floor(static_cast<double>(static_cast<double>(index) /
+						    static_cast<double>(frames)) * 100);
       if(percentage > last)
 	{
 	  last = static_cast<int>(percentage);
@@ -67,11 +67,14 @@ void processVideo(std::string filename, int centroids)
 
 void processFrame(cv::Mat* frame, int centroids)
 {
+  std::ofstream output;
+  output.open("/home/tess/Code/KMeans/output", std::ios_base::app);
+  assert(!output.fail());
   std::vector<Pixel> pixelVector{scanImage(*frame)};
   std::vector<Centroid> centroidVector{createCentroids(pixelVector, centroids)};
   int maxIter{20};
   int currentIter{1};
-  
+
   while(updateCentroids(centroidVector, pixelVector))
     {
       if(currentIter >= maxIter)
@@ -80,12 +83,16 @@ void processFrame(cv::Mat* frame, int centroids)
 	}
       currentIter++;
     }
+  for(auto &centroid : centroidVector)
+    {
+      centroid.printLocation(true, output);
+    }
+  output.close();
 }
 
-// Split this into multiple functions
+// Refactor
 int findElbow(std::string filename)
 {
-  
   cv::VideoCapture video(filename, cv::CAP_FFMPEG);
   assert(video.isOpened());
 
@@ -98,14 +105,14 @@ int findElbow(std::string filename)
   double percent{0.5};
   int frames(video.get(cv::CAP_PROP_FRAME_COUNT));
   std::map<int, int> totalElbows{};
-  
-  for(int i{1}; i < 11; ++i)
+
+  for(int i{1}; i <= MAX_CENTROIDS; ++i)
     {
       totalElbows[i] = 0;
     }
-  
+
   std::cout << "Testing " << percent << "% of frames to find optimal number of centroids.\n";
-  
+
   while(true)
     {
       cv::Mat frame;
@@ -146,12 +153,12 @@ int findElbowFrame(cv::Mat* frame)
   std::vector<double> distortionVector{};
   std::vector<double> absoluteChange{};
 
-  for(int i{1}; i <= 10 + 1; ++i)
+  for(int i{1}; i <= MAX_CENTROIDS; ++i)
     {
       centroidVector = createCentroids(pixelVector, i);
       while(updateCentroids(centroidVector, pixelVector)){}
       double averageDistortion{0.0};
-      
+
       for(auto &centroid : centroidVector)
 	{
 	  averageDistortion += centroid.distortion();
@@ -159,7 +166,7 @@ int findElbowFrame(cv::Mat* frame)
       averageDistortion /= centroidVector.size();
       distortionVector.push_back(averageDistortion);
     }
-  
+
   for(std::size_t i{0}; i < distortionVector.size() - 1; ++i)
     {
       absoluteChange.push_back(distortionVector[i] - distortionVector[i+1]);
@@ -172,8 +179,8 @@ int findElbowFrame(cv::Mat* frame)
 	  return i + 1;
 	}
     }
-  
-  
+
+
   return 0;
 }
 
