@@ -23,7 +23,8 @@ public:
   double distanceFromPixel(Pixel *pixel_ptr);
   void addPixel(Pixel *pixel_ptr);
   Pixel* releasePixel(int pixelID);
-  void printLocation(bool newLine, std::ofstream& output);
+  void printLocation(bool newLine, std::ofstream& output, double pixels);
+  void printLocation(bool newLine);
   double distortion();
 };
 

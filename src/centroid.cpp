@@ -88,16 +88,29 @@ Pixel* Centroid::releasePixel(int pixelID)
   return nullptr;
 }
 
-void Centroid::printLocation(bool newLine, std::ofstream& output)
+void Centroid::printLocation(bool newLine, std::ofstream& output, double pixels)
 {
-  output << "Centroid " <<  m_id << " at location: (";
+  output << m_id << ": ";
   output << m_location.r << ", ";
   output << m_location.g << ", ";
-  output << m_location.b << ")";
-  output << " with " << m_ownedPixels_ptr.size() << " pixels.";
+  output << m_location.b << ", ";
+  output << "with " << static_cast<double>(m_ownedPixels_ptr.size()) / pixels;
   if(newLine)
     {
       output << "\n";
+    }
+}
+
+void Centroid::printLocation(bool newLine)
+{
+  std::cout << "Centroid " <<  m_id << " at location: (";
+  std::cout << m_location.r << ", ";
+  std::cout << m_location.g << ", ";
+  std::cout << m_location.b << ")";
+  std::cout << " with " << m_ownedPixels_ptr.size() << " pixels.";
+  if(newLine)
+    {
+      std::cout << "\n";
     }
 }
 

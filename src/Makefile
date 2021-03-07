@@ -4,7 +4,7 @@
 #
 #-----------
 
-all: main.o centroid.o image.o kmeans.o videoProcess.o #$(LIB_NAME).a
+all: main.o centroid.o image.o kmeans.o videoProcess.o constants.h #$(LIB_NAME).a
 	@$(CXX) $(LDFLAGS) main.o centroid.o image.o kmeans.o videoProcess.o -o main.run $(LDLIBS); mv main.run $(ROOT_DIR)
 
 main.o: main.cpp videoProcess.h
@@ -16,10 +16,10 @@ centroid.o: centroid.cpp centroid.h pixel.h
 image.o: image.cpp image.h pixel.h
 	@$(CXX) $(CXXFLAGS) image.cpp
 
-kmeans.o: kmeans.cpp pixel.h centroid.h kmeans.h
+kmeans.o: kmeans.cpp kmeans.h pixel.h centroid.h constants.h
 	@$(CXX) $(CXXFLAGS) kmeans.cpp
 
-videoProcess.o: videoProcess.h pixel.h centroid.h kmeans.h image.h videoProcess.cpp
+videoProcess.o: videoProcess.cpp videoProcess.h pixel.h centroid.h kmeans.h image.h constants.h
 	@$(CXX) $(CXXFLAGS) videoProcess.cpp
 
 # $(LIB_NAME).a: centroid.o image.o kmeans.o videoProcess.o

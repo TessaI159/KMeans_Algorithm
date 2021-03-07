@@ -30,7 +30,7 @@ int main()
       using std::chrono::milliseconds;
       
       auto startTime = high_resolution_clock::now();
-      processVideo("/home/tess/Code/KMeans/assets/color2.avi", -1);
+      processVideo("/home/tess/Code/KMeans/assets/color.avi", -1);
       auto endTime = high_resolution_clock::now();
 
       duration<double, std::milli> processTime = duration_cast<milliseconds>(endTime - startTime);

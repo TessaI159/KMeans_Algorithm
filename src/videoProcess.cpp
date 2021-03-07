@@ -19,6 +19,15 @@
 // Refactor
 void processVideo(std::string filename, int centroids)
 {
+  std::string outputFilename{"/home/tess/Code/KMeans/output"};
+  std::ifstream outputCheck{};
+  outputCheck.open(outputFilename);
+  if(!outputCheck.fail())
+    {
+      outputCheck.close();
+      std::remove(outputFilename.c_str());
+    }
+  
   if(centroids < 1 || centroids > MAX_CENTROIDS)
     {
       centroids = findElbow(filename);
@@ -28,7 +37,7 @@ void processVideo(std::string filename, int centroids)
   cv::VideoCapture video(filename, cv::CAP_FFMPEG);
   assert(video.isOpened());
 
-  double ratio = findRatio(5000, 2500, 0.08,
+  double ratio = findRatio(TARGET_PIXELS, MIN_PIXELS, 0.08,
 			   video.get(cv::CAP_PROP_FRAME_WIDTH),
 			   video.get(cv::CAP_PROP_FRAME_HEIGHT));
 
@@ -49,10 +58,10 @@ void processVideo(std::string filename, int centroids)
 
       cv::resize(frame, resizedFrame, cv::Size(), ratio, ratio, cv::INTER_LANCZOS4);
       assert(resizedFrame.data);
-
-
-
+      
       index++;
+      processFrame(&resizedFrame, centroids, index);
+      
       double percentage = floor(static_cast<double>(static_cast<double>(index) /
 						    static_cast<double>(frames)) * 100);
       if(percentage > last)
@@ -65,11 +74,12 @@ void processVideo(std::string filename, int centroids)
   video.release();
 }
 
-void processFrame(cv::Mat* frame, int centroids)
+void processFrame(cv::Mat* frame, int centroids, int currentFrame)
 {
-  std::ofstream output;
+  std::ofstream output{};
   output.open("/home/tess/Code/KMeans/output", std::ios_base::app);
   assert(!output.fail());
+  
   std::vector<Pixel> pixelVector{scanImage(*frame)};
   std::vector<Centroid> centroidVector{createCentroids(pixelVector, centroids)};
   int maxIter{20};
@@ -83,10 +93,12 @@ void processFrame(cv::Mat* frame, int centroids)
 	}
       currentIter++;
     }
+  output << "Frame: " << currentFrame << "\n";
   for(auto &centroid : centroidVector)
     {
-      centroid.printLocation(true, output);
+      centroid.printLocation(true, output, frame->rows * frame->cols);
     }
+  output << "\n";
   output.close();
 }
 
@@ -96,7 +108,7 @@ int findElbow(std::string filename)
   cv::VideoCapture video(filename, cv::CAP_FFMPEG);
   assert(video.isOpened());
 
-  double ratio = findRatio(5000, 2500, 0.08,
+  double ratio = findRatio(TARGET_PIXELS, MIN_PIXELS, 0.08,
 			   video.get(cv::CAP_PROP_FRAME_WIDTH),
 			   video.get(cv::CAP_PROP_FRAME_HEIGHT));
   cv::Mat resizedFrame{};
@@ -111,7 +123,7 @@ int findElbow(std::string filename)
       totalElbows[i] = 0;
     }
 
-  std::cout << "Testing " << percent << "% of frames to find optimal number of centroids.\n";
+  std::cout << "Testing to find the optimal number of centroids.\n";
 
   while(true)
     {
@@ -131,12 +143,15 @@ int findElbow(std::string filename)
 	}
       ++currentFrame;
     }
+  
   int largest{totalElbows[1]};
   int largestIndex{1};
+  
   for(std::size_t i{2}; i < totalElbows.size(); ++i)
     {
       if(totalElbows[i] > largest)
 	{
+	  largest = totalElbows[i];
 	  largestIndex = i;
 	}
     }
@@ -186,8 +201,6 @@ int findElbowFrame(cv::Mat* frame)
 
 double findRatio(int targetPixels, int minPixels, double ratio, double width, double height)
 {
-  targetPixels = 5000;
-  minPixels = 2500;
   ratio = 0.08;
 
   if(width * height * ratio * ratio > targetPixels ||
