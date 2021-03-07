@@ -17,7 +17,7 @@
 #include <fstream>
 
 // Refactor
-void processVideo(std::string filename, int centroids)
+void processVideo(std::string filename, int centroids, int targetPixels, int minPixels)
 {
   std::string outputFilename{"/home/tess/Code/KMeans/output"};
   std::ifstream outputCheck{};
@@ -30,14 +30,14 @@ void processVideo(std::string filename, int centroids)
   
   if(centroids < 1 || centroids > MAX_CENTROIDS)
     {
-      centroids = findElbow(filename);
+      centroids = findElbow(filename, targetPixels, minPixels);
       std::cout << "Optimal number of centroids is: " << centroids << "\n";
     }
 
   cv::VideoCapture video(filename, cv::CAP_FFMPEG);
   assert(video.isOpened());
 
-  double ratio = findRatio(TARGET_PIXELS, MIN_PIXELS, 0.08,
+  double ratio = findRatio(targetPixels, minPixels, 0.08,
 			   video.get(cv::CAP_PROP_FRAME_WIDTH),
 			   video.get(cv::CAP_PROP_FRAME_HEIGHT));
 
@@ -103,12 +103,12 @@ void processFrame(cv::Mat* frame, int centroids, int currentFrame)
 }
 
 // Refactor
-int findElbow(std::string filename)
+int findElbow(std::string filename, int targetPixels, int minPixels)
 {
   cv::VideoCapture video(filename, cv::CAP_FFMPEG);
   assert(video.isOpened());
 
-  double ratio = findRatio(TARGET_PIXELS, MIN_PIXELS, 0.08,
+  double ratio = findRatio(targetPixels, minPixels, 0.08,
 			   video.get(cv::CAP_PROP_FRAME_WIDTH),
 			   video.get(cv::CAP_PROP_FRAME_HEIGHT));
   cv::Mat resizedFrame{};
@@ -137,7 +137,8 @@ int findElbow(std::string filename)
 
       if(fmod(static_cast<double>(currentFrame), round(100.0 / percent)) == 0)
 	{
-	  std::cout << round((static_cast<double>(currentFrame) / static_cast<double>(frames)) * 100) << "% complete\n";
+	  std::cout << round((static_cast<double>(currentFrame) /
+			      static_cast<double>(frames)) * 100) << "% complete\n";
 	  cv::resize(frame, resizedFrame, cv::Size(), ratio, ratio, cv::INTER_LANCZOS4);
 	  totalElbows[findElbowFrame(&resizedFrame)]++;
 	}

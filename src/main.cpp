@@ -16,12 +16,36 @@
 
 
 
-int main()
+int main(int argc, char* args[])
 {
-
-
-
   bool statistics{true};
+  int targetPixels{3000};
+  int minPixels{800};
+  std::string filename{"/home/tess/Code/KMeans/assets/"};
+
+  if(argc == 2)
+    {
+      std::string fileAddition = args[1];
+      filename += fileAddition;
+    }
+  else if(argc == 4)
+    {
+      targetPixels = atoi(args[1]);
+      minPixels = atoi(args[2]);
+      std::string fileAddition = args[3];
+      filename += fileAddition;
+    }
+  else
+    {
+      std::cerr << "You forgot something...\n";
+      return -1;
+    }
+
+  std::cout << "Target pixels: " << targetPixels << "\n";
+  std::cout << "Min pixels: " << minPixels << "\n";
+  std::cout << "Filename: " << filename << "\n";
+
+
   if (statistics)
     {
       using std::chrono::high_resolution_clock;
@@ -30,12 +54,12 @@ int main()
       using std::chrono::milliseconds;
       
       auto startTime = high_resolution_clock::now();
-      processVideo("/home/tess/Code/KMeans/assets/mark.avi", -1);
+      processVideo(filename, -1, targetPixels, minPixels);
       auto endTime = high_resolution_clock::now();
 
       duration<double, std::milli> processTime = duration_cast<milliseconds>(endTime - startTime);
 
-      cv::VideoCapture video("/home/tess/Code/KMeans/assets/color2.avi", cv::CAP_FFMPEG);
+      cv::VideoCapture video(filename, cv::CAP_FFMPEG);
       assert(video.isOpened());
 
       double frames{video.get(cv::CAP_PROP_FRAME_COUNT)};
@@ -51,7 +75,7 @@ int main()
     }
   else
     {
-      processVideo("/home/tess/Code/KMeans/assets/color2.avi", -1);
+      processVideo(filename, -1, targetPixels, minPixels);
     }
 
 
