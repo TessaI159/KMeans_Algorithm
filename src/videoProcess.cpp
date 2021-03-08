@@ -43,6 +43,7 @@ void processVideo(std::string filename, int centroids, int targetPixels, int min
 
   int index{0};
   int frames(video.get(cv::CAP_PROP_FRAME_COUNT));
+  std::cout << frames << "\n";
   cv::Mat frame{};
   cv::Mat resizedFrame{};
   int last{-1};
