@@ -1,6 +1,7 @@
 import os
 import sys
 import math
+from pathlib import Path
 
 class Centroid:
     r = 0
@@ -325,17 +326,17 @@ def createCentroidList(file):
         if(line[0] == "F"):
             currentFrame = line[7:]
             continue
-    else:
-        centroidIndex = line[0]
-        splitList = line[3:].split(', ')
-        tempCentroid = Centroid()
-        tempCentroid.frame = int(currentFrame)
-        tempCentroid.index = int(centroidIndex)
-        tempCentroid.r = int(splitList.pop(0))
-        tempCentroid.g = int(splitList.pop(0))
-        tempCentroid.b = int(splitList.pop(0))
-        tempCentroid.ratio = float(splitList.pop(0).replace('with ', ''))
-        centroidList.append(tempCentroid)
+        else:
+            centroidIndex = line[0]
+            splitList = line[3:].split(', ')
+            tempCentroid = Centroid()
+            tempCentroid.frame = int(currentFrame)
+            tempCentroid.index = int(centroidIndex)
+            tempCentroid.r = int(splitList.pop(0))
+            tempCentroid.g = int(splitList.pop(0))
+            tempCentroid.b = int(splitList.pop(0))
+            tempCentroid.ratio = float(splitList.pop(0).replace('with ', ''))
+            centroidList.append(tempCentroid)
 
     for centroid in centroidList:
         if(centroid.r < 0):
@@ -349,7 +350,23 @@ def createCentroidList(file):
 
 
 def compareOutputs(centroidListSmall, centroidListLarge, executionSmall, executionLarge, pixelsSmall, pixelsLarge):
-    pass
+    totalDifference = 0
+    totalCounted = 0
+    
+    for i in range(0, len(centroidListSmall)):
+        tempColor = Color(centroidListSmall[i].r, centroidListSmall[i].g, centroidListSmall[i].b)
+        refColor = Color(centroidListLarge[i].r, centroidListLarge[i].g, centroidListLarge[i].b)
+        if(refColor.rgb.sR == 0 and refColor.rgb.sG == 0 and refColor.rgb.sB == 0):
+            continue
+        else:
+            totalDifference += deltaE00Difference(refColor, tempColor)
+            totalCounted += 1
+
+        
+    averageDifference = totalDifference / totalCounted
+    print(averageDifference)
+    
+        
 
 
 def largest(list):
@@ -411,9 +428,14 @@ else:
 largestPixelIndex = largest(pixelList)
 
 for pixel in pixelList:
-    os.system(f'./main.run {pixel} {defaultMinPixels} {videoName}')
     pixelStr = str(pixel)
-    os.system(f'mv output output{pixelStr}_{videoName[:-4]}')
+    filePath = Path(f'/home/tess/Code/KMeans/output{pixelStr}_{videoName[:-4]}')
+    if(filePath.is_file()):
+        print(f'{videoName} has already been run using {pixel} pixels as a parameter. Skipping.')
+    else:
+        os.system(f'./main.run {pixel} {defaultMinPixels} {videoName}')
+        os.system(f'mv output output{pixelStr}_{videoName[:-4]}')
+        
     centroidListOutput = createCentroidList(f'output{pixelStr}_{videoName[:-4]}')
 
     centroidListList.append(centroidListOutput[0])
