@@ -170,7 +170,7 @@ def deltaCDifference(color1, color2):
 
 
 def deltaHDifference(color1, color2):
-    return math.sqrt(((color2.lab.a - color2.lab.b)**2) + ((color1.lab.b - color1.lab.a)**2) - ((deltaCDifference(color1, color2))**2))
+    return math.sqrt(((color2.lab.a - color1.lab.a)**2) + ((color2.lab.b - color1.lab.b)**2) - ((deltaCDifference(color1, color2))**2))
 
 # Tested: Working
 def deltaE76Difference(color1, color2):
@@ -260,7 +260,7 @@ def deltaE00Difference(color1, color2):
     return math.sqrt(arg_L**2 + arg_C**2 + arg_H**2 + (R_T * arg_C * arg_H))
 
 
-# Untested
+# Tested: Working
 def deltaCMCDifference(color1, color2, lightness=2, chroma=1):
     if(color1.lch.l < 16):
         S_L = 0.511
@@ -306,8 +306,6 @@ def allDifferences(ref, color):
     print("Delta CMC: ", end="")
     print(deltaCMCDifference(ref, color))
     print()
-    print()
-    print()
 
 def createCentroidList(file):
     centroidList = []
@@ -340,11 +338,12 @@ def createCentroidList(file):
 
     for centroid in centroidList:
         if(centroid.r < 0):
-            centroid.r = 0
+            centroid.r = -1
         if(centroid.g < 0):
-            centroid.g = 0
+            centroid.g = -1
         if(centroid.b < 0):
-            centroid.b = 0
+            centroid.b = -1
+
 
     return (centroidList, targetPixels, executionTime)
 
@@ -352,11 +351,12 @@ def createCentroidList(file):
 def compareOutputs(centroidListSmall, centroidListLarge, executionSmall, executionLarge, pixelsSmall, pixelsLarge):
     totalDifference = 0
     totalCounted = 0
+    executionDifference = float(executionLarge) / float(executionSmall) * 100.0
     
     for i in range(0, len(centroidListSmall)):
         tempColor = Color(centroidListSmall[i].r, centroidListSmall[i].g, centroidListSmall[i].b)
         refColor = Color(centroidListLarge[i].r, centroidListLarge[i].g, centroidListLarge[i].b)
-        if(refColor.rgb.sR == 0 and refColor.rgb.sG == 0 and refColor.rgb.sB == 0):
+        if(refColor.rgb.sR <= -1 or refColor.rgb.sG <= -1 or refColor.rgb.sB <= -1 or tempColor.rgb.sR <= -1 or tempColor.rgb.sG <= -1 or tempColor.rgb.sB <= -1):
             continue
         else:
             totalDifference += deltaE00Difference(refColor, tempColor)
@@ -364,11 +364,11 @@ def compareOutputs(centroidListSmall, centroidListLarge, executionSmall, executi
 
         
     averageDifference = totalDifference / totalCounted
-    print(averageDifference)
+    print(f'Reducing from {pixelsLarge} to {pixelsSmall} pixels caused the script to run %.3f%%  as fast with an average loss of %.3f accuracy in color output' % (executionDifference, averageDifference))
+    print('For reference, a change of ~2.3 represents a barely noticeable change in the colors, if you have the two side by side')
+    print()
     
-        
-
-
+    
 def largest(list):
     largestItem = list[0]
     largestIndex = 0
@@ -390,7 +390,8 @@ centroidListExecution = []
 ############# MAIN #############
 ################################
 
-# refColor = Color(178, 4, 154)
+# refColor = Color(50,168,82)
+# colorChanged = Color(56,156,83)
 # color1 = Color(44, 187, 51)
 # color2 = Color(181, 59, 86)
 # color3 = Color(252, 197, 23)
@@ -406,7 +407,8 @@ centroidListExecution = []
 
 # for color in colorList:
 #     allDifferences(refColor, color)
-    
+
+# allDifferences(refColor, colorChanged)
 
 # print(f'Color 1 CIE-L*ab: {color1.lab.l}, {color1.lab.a}, {color1.lab.b}')
 # print(f'Color 2 CIE-L*ab: {color2.lab.l}, {color2.lab.a}, {color2.lab.b}')
@@ -443,6 +445,6 @@ for pixel in pixelList:
 
 for x in range(len(centroidListList)):
     if(x != largestPixelIndex):
-        compareOutputs(centroidListList[x], centroidListList[largestPixelIndex], centroidListExecution[x], centroidListExecution[largestPixelIndex], pixelList[x], pixelList[largestPixelIndex] )
+        compareOutputs(centroidListList[x], centroidListList[largestPixelIndex], centroidListExecution[x], centroidListExecution[largestPixelIndex], pixelList[x], pixelList[largestPixelIndex])
 
 # script video [pixels pixels pixels...]

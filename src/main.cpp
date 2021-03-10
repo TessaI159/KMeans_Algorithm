@@ -73,7 +73,7 @@ int main(int argc, char* args[])
 	}
       else
 	{
-	  output << processTimeDouble / frames << "\n";
+	  output << processTimeDouble  << "\n";
 	  output << targetPixels << "\n";
 	}
       output.close();
