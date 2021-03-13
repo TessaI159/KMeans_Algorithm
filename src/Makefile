@@ -22,7 +22,7 @@ kmeans.o: kmeans.cpp kmeans.h pixel.h centroid.h constants.h
 videoProcess.o: videoProcess.cpp videoProcess.h pixel.h centroid.h kmeans.h image.h constants.h
 	@$(CXX) $(CXXFLAGS) videoProcess.cpp
 
-color.o: color.cpp color.h
+color.o: color.cpp color.h constants.h
 	@$(CXX) $(CXXFLAGS) color.cpp
 
 # $(LIB_NAME).a: centroid.o image.o kmeans.o videoProcess.o

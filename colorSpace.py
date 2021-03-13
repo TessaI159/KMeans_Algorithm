@@ -404,9 +404,18 @@ centroidListExecution = []
 # color10 = Color(44, 181, 233)
 
 cColor = Color(17,97,142);
+print("XYZ")
 print(cColor.xyz.x)
 print(cColor.xyz.y)
 print(cColor.xyz.z)
+print("Lab")
+print(cColor.lab.l)
+print(cColor.lab.a)
+print(cColor.lab.b)
+print("Lch")
+print(cColor.lch.l)
+print(cColor.lch.c)
+print(cColor.lch.h)
 
 # colorList = [color1, color2, color3, color4, color5, color6, color7, color8, color9, color10]
 
