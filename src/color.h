@@ -1,6 +1,8 @@
 #ifndef COLOR_H
 #define COLOR_H
 
+class Color;
+
 class sRGB
 {
 private:
@@ -9,13 +11,10 @@ private:
   double m_b;
 public:
   sRGB();
-  sRGB(double r, double g, double b);
-  double getr();
-  double getg();
-  double getb();
-  void setr(double r);
-  void setg(double g);
-  void setb(double b);
+  double r();
+  double g();
+  double b();
+  friend class Color;
 };
 
 class XYZ
@@ -26,10 +25,11 @@ private:
   double m_z;
 public:
   XYZ();
-  XYZ(double x, double y, double z);
-  double getx();
-  double gety();
-  double getz();
+  double x();
+  double y();
+  double z();
+
+  friend class Color;
 };
 
 class Lab
@@ -40,10 +40,11 @@ private:
   double m_b;
 public:
   Lab();
-  Lab(double l, double a, double b);
-  double getl();
-  double geta();
-  double getb();
+  double l();
+  double a();
+  double b();
+
+  friend class Color;
 };
 
 class Lch
@@ -54,10 +55,11 @@ private:
   double m_h;
 public:
   Lch();
-  Lch(double l, double c, double h);
-  double getl();
-  double getc();
-  double geth();
+  double l();
+  double c();
+  double h();
+
+  friend class Color;
 };
 
 class Color
@@ -66,12 +68,17 @@ private:
   void sRGBtoXYZConversion();
   void XYZtoCIELabConversion();
   void CIELabtoCIELchConversion();
+  sRGB m_rgb;
+  XYZ m_xyz;
+  Lab m_lab;
+  Lch m_lch;
 public:
   Color(double r, double g, double b);
-  sRGB rgb;
-  XYZ xyz;
-  Lab lab;
-  Lch lch;
+
+  sRGB rgb();
+  XYZ xyz();
+  Lab lab();
+  Lch lch();
 };
 
 #endif

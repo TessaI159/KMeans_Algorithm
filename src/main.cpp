@@ -25,6 +25,11 @@
 
 int main(int argc, char* args[])
 {
+  Color color(17,97,142);
+  std::cout << color.xyz().x() << "\n";
+  std::cout << color.xyz().y() << "\n";
+  std::cout << color.xyz().z() << "\n";
+  
   // bool statistics{true};
   // int targetPixels{3000};
   // int minPixels{200};

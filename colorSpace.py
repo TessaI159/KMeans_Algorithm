@@ -403,6 +403,11 @@ centroidListExecution = []
 # color9 = Color(250, 105, 224)
 # color10 = Color(44, 181, 233)
 
+cColor = Color(17,97,142);
+print(cColor.xyz.x)
+print(cColor.xyz.y)
+print(cColor.xyz.z)
+
 # colorList = [color1, color2, color3, color4, color5, color6, color7, color8, color9, color10]
 
 # for color in colorList:
@@ -414,37 +419,37 @@ centroidListExecution = []
 # print(f'Color 2 CIE-L*ab: {color2.lab.l}, {color2.lab.a}, {color2.lab.b}')
 
 
-if(len(sys.argv) < 2):
-    print("Must input video name")
-    exit()
-elif(len(sys.argv) == 2):
-    print("Using default pixels of 1200 and 3000")
-    pixelList = [1200, 3000]
-    videoName = sys.argv[1]
-else:
-    videoName = sys.argv[1]
-    pixelList = []
-    for pixel in sys.argv[2:]:
-        pixelList.append(int(pixel))
+# if(len(sys.argv) < 2):
+#     print("Must input video name")
+#     exit()
+# elif(len(sys.argv) == 2):
+#     print("Using default pixels of 1200 and 3000")
+#     pixelList = [1200, 3000]
+#     videoName = sys.argv[1]
+# else:
+#     videoName = sys.argv[1]
+#     pixelList = []
+#     for pixel in sys.argv[2:]:
+#         pixelList.append(int(pixel))
 
-largestPixelIndex = largest(pixelList)
+# largestPixelIndex = largest(pixelList)
 
-for pixel in pixelList:
-    pixelStr = str(pixel)
-    filePath = Path(f'/home/tess/Code/KMeans_algorithm/output{pixelStr}_{videoName[:-4]}')
-    if(filePath.is_file()):
-        print(f'{videoName} has already been run using {pixel} pixels as a parameter. Skipping.')
-    else:
-        os.system(f'./main.run {pixel} {defaultMinPixels} {videoName}')
-        os.system(f'mv output output{pixelStr}_{videoName[:-4]}')
+# for pixel in pixelList:
+#     pixelStr = str(pixel)
+#     filePath = Path(f'/home/tess/Code/KMeans_algorithm/output{pixelStr}_{videoName[:-4]}')
+#     if(filePath.is_file()):
+#         print(f'{videoName} has already been run using {pixel} pixels as a parameter. Skipping.')
+#     else:
+#         os.system(f'./main.run {pixel} {defaultMinPixels} {videoName}')
+#         os.system(f'mv output output{pixelStr}_{videoName[:-4]}')
         
-    centroidListOutput = createCentroidList(f'output{pixelStr}_{videoName[:-4]}')
+#     centroidListOutput = createCentroidList(f'output{pixelStr}_{videoName[:-4]}')
 
-    centroidListList.append(centroidListOutput[0])
-    centroidListExecution.append(centroidListOutput[2])
+#     centroidListList.append(centroidListOutput[0])
+#     centroidListExecution.append(centroidListOutput[2])
 
-for x in range(len(centroidListList)):
-    if(x != largestPixelIndex):
-        compareOutputs(centroidListList[x], centroidListList[largestPixelIndex], centroidListExecution[x], centroidListExecution[largestPixelIndex], pixelList[x], pixelList[largestPixelIndex])
+# for x in range(len(centroidListList)):
+#     if(x != largestPixelIndex):
+#         compareOutputs(centroidListList[x], centroidListList[largestPixelIndex], centroidListExecution[x], centroidListExecution[largestPixelIndex], pixelList[x], pixelList[largestPixelIndex])
 
 # script video [pixels pixels pixels...]

@@ -1,52 +1,99 @@
 #include "color.h"
 
+#include <iostream>
+#include <math.h>
+
 sRGB::sRGB(){}
-sRGB::sRGB(double r, double g, double b) : m_r{r}, m_g{g}, m_b{b}
-{
 
-}
-
-double sRGB::getr() { return m_r; }
-double sRGB::getg() { return m_g; }
-double sRGB::getb() { return m_b; }
-void sRGB::setr(double r) { m_r = r; }
-void sRGB::setg(double g) { m_g = g; }
-void sRGB::setb(double b) { m_b = b; }
+double sRGB::r() { return m_r; }
+double sRGB::g() { return m_g; }
+double sRGB::b() { return m_b; }
 
 
 XYZ::XYZ(){}
-XYZ::XYZ(double x, double y, double z) : m_x{x}, m_y{y}, m_z{z}
-{
 
-}
+double XYZ::x() { return m_x; }
+double XYZ::y() { return m_y; }
+double XYZ::z() { return m_z; }
 
-double XYZ::getx() { return m_x; }
-double XYZ::gety() { return m_y; }
-double XYZ::getz() { return m_z; }
 
 Lab::Lab(){}
-Lab::Lab(double l, double a, double b) : m_l{l}, m_a{a}, m_b{b}
-{
 
-}
+double Lab::l() { return m_l; }
+double Lab::a() { return m_a; }
+double Lab::b() { return m_a; }
 
-double Lab::getl() { return m_l; }
-double Lab::geta() { return m_a; }
-double Lab::getb() { return m_a; }
 
 Lch::Lch(){}
-Lch::Lch(double l, double c, double h) : m_l{l}, m_c{c}, m_h{h}
-{
 
-}
+double Lch::l() { return m_l; }
+double Lch::c() { return m_c; }
+double Lch::h() { return m_c; }
 
-double Lch::getl() { return m_l; }
-double Lch::getc() { return m_c; }
-double Lch::geth() { return m_c; }
 
 Color::Color(double r, double g, double b)
 {
-  rgb.setr(r);
-  rgb.setg(g);
-  rgb.setb(b);
+  m_rgb.m_r = r;
+  m_rgb.m_g = g;
+  m_rgb.m_b = b;
+  sRGBtoXYZConversion();
 }
+
+void Color::sRGBtoXYZConversion()
+{
+  double vR = m_rgb.m_r / 255.0;
+  
+  if(vR > 0.04045)
+    {
+      vR = pow(((vR + 0.055) / 1.055), 2.4);
+    }
+  else
+    {
+      vR /= 12.92;
+    }
+
+  double vG = m_rgb.m_g / 255.0;
+
+  if(vG > 0.04045)
+    {
+      vG = pow(((vG + 0.055) / 1.055), 2.4);
+    }
+  else
+    {
+      vG /= 12.92;
+    }
+
+  double vB = m_rgb.m_b / 255.0;
+
+  if(vB > 0.04045)
+    {
+      vB = pow(((vB + 0.055) / 1.055), 2.4);
+    }
+  else
+    {
+      vB /= 12.92;
+    }
+
+  vR *= 100;
+  vG *= 100;
+  vB *= 100;
+
+  m_xyz.m_x = (vR * 0.4124) + (vG * 0.3576) + (vB * 0.1805);
+  m_xyz.m_y = (vR * 0.2126) + (vG * 0.7152) + (vB * 0.0722);
+  m_xyz.m_z = (vR * 0.0193) + (vG * 0.1192) + (vB * 0.9505);
+}
+
+void Color::XYZtoCIELabConversion()
+{
+  
+}
+
+void Color::CIELabtoCIELchConversion()
+{
+  
+}
+
+sRGB Color::rgb(){ return m_rgb; }
+XYZ Color::xyz(){ return m_xyz; }
+Lab Color::lab(){ return m_lab; }
+Lch Color::lch(){ return m_lch; }
