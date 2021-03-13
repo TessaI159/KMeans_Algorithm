@@ -19,7 +19,8 @@
 // Refactor
 void processVideo(std::string filename, int centroids, int targetPixels, int minPixels)
 {
-  std::string outputFilename{"/home/tess/Code/KMeans/output"};
+  std::string output = "output";
+  std::string outputFilename{PROJECT_PATH + "output"};
   std::ifstream outputCheck{};
   outputCheck.open(outputFilename);
   if(!outputCheck.fail())
@@ -78,7 +79,7 @@ void processVideo(std::string filename, int centroids, int targetPixels, int min
 void processFrame(cv::Mat* frame, int centroids, int currentFrame)
 {
   std::ofstream output{};
-  output.open("/home/tess/Code/KMeans/output", std::ios_base::app);
+  output.open(PROJECT_PATH + "output");
   assert(!output.fail());
   
   std::vector<Pixel> pixelVector{scanImage(*frame)};

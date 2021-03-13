@@ -8,14 +8,14 @@ CXX=g++
 CXXFLAGS=-g -Wall -std=c++17 -c --coverage -I/usr/local/include/opencv4/
 LDFLAGS=-g --coverage
 LDLIBS=-L/usr/local/lib/OpenCV -L/usr/lib/x86_64-linux-gnu -L$(SRC_DIR) \
--l:libboost_unit_test_framework.a -l:libopencv_core.so -l:libopencv_imgproc.so \
--l:libopencv_imgcodecs.so -l:libopencv_video.so -l:libopencv_videoio.so -l:libopencv_highgui.so # -l:$(LIB_NAME).a
+-l:libopencv_core.so -l:libopencv_imgproc.so \
+-l:libopencv_imgcodecs.so -l:libopencv_video.so -l:libopencv_videoio.so -l:libopencv_highgui.so # -l:$(LIB_NAME).a -l:libboost_unit_test_framework.a
 
 
 LIB_NAME=kmeans
 AR=ar
 ARFLAGS=-cr
-ROOT_DIR=/home/tess/Code/KMeans
+ROOT_DIR=/home/tess/Code/KMeans_algorithm
 SRC_DIR=$(ROOT_DIR)/src
 TEST_DIR=$(ROOT_DIR)/t
 
@@ -54,7 +54,7 @@ main:
 #	@$(MAKE) -C $(TEST_DIR)
 
 clean: main_clean test_clean
-	@$(RM) *.o *.run *.a *.info *.gcda *.gcno *.json; lcov --no-external -d $(PWD) -z -q
+	@$(RM) *.o *.run *.a *.info *.gcda *.gcno *.json
 
 main_clean:
 	@$(MAKE) -C $(SRC_DIR) clean

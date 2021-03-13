@@ -431,7 +431,7 @@ largestPixelIndex = largest(pixelList)
 
 for pixel in pixelList:
     pixelStr = str(pixel)
-    filePath = Path(f'/home/tess/Code/KMeans/output{pixelStr}_{videoName[:-4]}')
+    filePath = Path(f'/home/tess/Code/KMeans_algorithm/output{pixelStr}_{videoName[:-4]}')
     if(filePath.is_file()):
         print(f'{videoName} has already been run using {pixel} pixels as a parameter. Skipping.')
     else:
