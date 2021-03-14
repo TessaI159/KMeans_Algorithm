@@ -19,7 +19,7 @@ image.o: image.cpp image.h pixel.h
 kmeans.o: kmeans.cpp kmeans.h pixel.h centroid.h constants.h
 	@$(CXX) $(CXXFLAGS) kmeans.cpp
 
-videoProcess.o: videoProcess.cpp videoProcess.h pixel.h centroid.h kmeans.h image.h constants.h
+videoProcess.o: videoProcess.cpp videoProcess.h pixel.h centroid.h kmeans.h image.h constants.h color.h
 	@$(CXX) $(CXXFLAGS) videoProcess.cpp
 
 color.o: color.cpp color.h constants.h
