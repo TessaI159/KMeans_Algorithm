@@ -25,21 +25,6 @@
 
 int main(int argc, char* args[])
 {
-  Color color(17,97,142);
-  std::cout << "XYZ\n";
-  std::cout << color.xyz().x() << "\n";
-  std::cout << color.xyz().y() << "\n";
-  std::cout << color.xyz().z() << "\n";
-  std::cout << "Lab\n";
-  std::cout << color.lab().l() << "\n";
-  std::cout << color.lab().a() << "\n";
-  std::cout << color.lab().b() << "\n";
-  std::cout << "Lch\n";
-  std::cout << color.lch().l() << "\n";
-  std::cout << color.lch().c() << "\n";
-  std::cout << color.lch().h() << "\n";
-
-  
   // bool statistics{true};
   // int targetPixels{3000};
   // int minPixels{200};

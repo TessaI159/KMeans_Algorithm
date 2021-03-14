@@ -81,6 +81,8 @@ public:
   Lch lch();
 };
 
+double deltaE00Difference(Color color1, Color color2);
+
 #endif
 
 

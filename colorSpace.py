@@ -201,7 +201,7 @@ def deltaE94Difference(color1, color2):
 
     return math.sqrt((xDL**2) + (xDC**2) + (xDH**2))
 
-# Untested
+# Tested: Working
 def deltaE00Difference(color1, color2):
     K_L = K_C = K_H = 1.0
     deltaLTick = color2.lab.l - color1.lab.l
@@ -402,20 +402,6 @@ centroidListExecution = []
 # color8 = Color(120, 250, 154)
 # color9 = Color(250, 105, 224)
 # color10 = Color(44, 181, 233)
-
-cColor = Color(17,97,142);
-print("XYZ")
-print(cColor.xyz.x)
-print(cColor.xyz.y)
-print(cColor.xyz.z)
-print("Lab")
-print(cColor.lab.l)
-print(cColor.lab.a)
-print(cColor.lab.b)
-print("Lch")
-print(cColor.lch.l)
-print(cColor.lch.c)
-print(cColor.lch.h)
 
 # colorList = [color1, color2, color3, color4, color5, color6, color7, color8, color9, color10]
 
