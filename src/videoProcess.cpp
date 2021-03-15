@@ -225,32 +225,45 @@ double findBestRatio(std::string filename, double percent)
   double totalProcessTime15{};
   double smallerProcessTime{};
   double averageProcessTime{};
+  double averageProcessTime15{};
   double largestDifference{};
   std::vector<double> largestDifferenceVector{};
   std::vector<double> averageDifferenceVector{};
   std::vector<double> totalTimeVector{};
   std::vector<double> averageTimeVector{};
 
-  std::vector<Color> colorVector15{extractColor(filename, percent, 15, totalProcessTime15, averageProcessTime)};
+  std::vector<Color> colorVector15{extractColor(filename, percent, 15, totalProcessTime15, averageProcessTime15)};
   for (int ratio{1}; ratio < 15; ++ratio)
     {
       std::vector<Color> smallerColorVector{extractColor(filename, percent, ratio, smallerProcessTime, averageProcessTime)};
       double averageDifference {compareAccuracy(colorVector15, smallerColorVector, largestDifference)};
       std::cout << "The average color difference between ratios of 15 and " << ratio << " is " << averageDifference << "\n";
-      std::cout << "The total speed difference (in seconds) is  " << totalProcessTime15 - smallerProcessTime << "\n";
+      std::cout << "The total speed difference (per frame) is " << averageProcessTime15 - averageProcessTime << "\n";
       largestDifferenceVector.push_back(largestDifference);
       averageDifferenceVector.push_back(averageDifference);
       totalTimeVector.push_back(smallerProcessTime);
       averageTimeVector.push_back(averageProcessTime);
     }
   
-  averageTimeVector.push_back(averageProcessTime);
+  averageTimeVector.push_back(averageProcessTime15);
   totalTimeVector.push_back(totalProcessTime15);
   largestDifferenceVector.push_back(-1);
   averageDifferenceVector.push_back(-1);
+
+  averageTimeVector[14] = -1;
+  totalTimeVector[14] = -1;
+  largestDifferenceVector[14] = -1;
+  averageDifferenceVector[14] = -1;
+
+  averageTimeVector[0] = -1;
+  totalTimeVector[0] = -1;
+  largestDifferenceVector[0] = -1;
+  averageDifferenceVector[0] = -1;
+  
   return 0.08;
 }
 
+// Refactor
 std::vector<Color> extractColor(std::string filename, double percent, double ratio, double &totalProcessTime_o, double &averageProcessTime_o)
 {
   using std::chrono::high_resolution_clock;
@@ -288,7 +301,7 @@ std::vector<Color> extractColor(std::string filename, double percent, double rat
 	  double percentComplete{floor(((static_cast<double>(currentFrame) / frames)) * 100)};
 	  if(percentComplete > last)
 	    {
-	      std::cout << percentComplete << "% complete\n";
+	      // std::cout << percentComplete << "% complete\n";
 	      last = percentComplete;
 	    }
 
