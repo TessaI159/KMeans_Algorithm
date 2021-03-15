@@ -14,6 +14,4 @@ constexpr double X_2{95.047};
 constexpr double Y_2{100.00};
 constexpr double Z_2{108.883};
 
-constexpr double PI{3.14159265};
-
 #endif

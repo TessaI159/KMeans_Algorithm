@@ -73,6 +73,7 @@ private:
   Lab m_lab;
   Lch m_lch;
 public:
+  Color();
   Color(double r, double g, double b);
 
   sRGB rgb();

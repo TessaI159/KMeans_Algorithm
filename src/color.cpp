@@ -31,6 +31,13 @@ double Lch::l() { return m_l; }
 double Lch::c() { return m_c; }
 double Lch::h() { return m_h; }
 
+Color::Color()
+{
+  m_rgb.m_r = 0;
+  m_rgb.m_g = 0;
+  m_rgb.m_b = 0;
+}
+
 
 Color::Color(double r, double g, double b)
 {
@@ -120,9 +127,7 @@ void Color::XYZtoCIELabConversion()
 
   m_lab.m_l = (116.0 * vY) - 16;
   m_lab.m_a = 500.0 * (vX - vY);
-  std::cout << m_lab.m_a << "\n";
   m_lab.m_b = 200.0 * (vY - vZ);
-  std::cout << m_lab.m_b << "\n";
 }
 
 void Color::CIELabtoCIELchConversion()
@@ -131,11 +136,11 @@ void Color::CIELabtoCIELchConversion()
 
   if(vH > 0)
     {
-      vH = (vH / PI) * 180;
+      vH = (vH / M_PI) * 180;
     }
   else
     {
-      vH = 360 - (abs(vH) / PI) * 180;
+      vH = 360 - (abs(vH) / M_PI) * 180;
     }
 
   m_lch.m_l = m_lab.m_l;

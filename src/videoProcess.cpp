@@ -16,10 +16,11 @@
 #include <array>
 #include <map>
 #include <fstream>
+#include <chrono>
 
 // TODO
 // Find a good way to calculate the optimal # of frames to sample for
-// elbow and accuracy tests
+// elbow and accuracy tests (double percent)
 
 void processVideo(std::string filename, int centroids, int targetPixels, int minPixels)
 {
@@ -33,21 +34,19 @@ void processVideo(std::string filename, int centroids, int targetPixels, int min
       std::remove(outputFilename.c_str());
     }
 
+  std::cout << "Finding best ratio...\n";
+  double ratio = findBestRatio(filename, 0.5);
+
   if(centroids < 1 || centroids > MAX_CENTROIDS)
     {
       std::cout << "Finding optimal number of centroids...\n";
-      centroids = findElbow(filename, targetPixels, minPixels);
+      centroids = findElbow(filename, targetPixels, minPixels, ratio);
       // centroids = 3;
       std::cout << "Optimal number of centroids is " << centroids << "\n";
     }
 
   cv::VideoCapture video(filename, cv::CAP_FFMPEG);
   assert(video.isOpened());
-
-  double ratio = findRatio(targetPixels, minPixels, 0.08,
-			   video.get(cv::CAP_PROP_FRAME_WIDTH),
-			   video.get(cv::CAP_PROP_FRAME_HEIGHT));
-
 
   processVideoLoop(filename, ratio, centroids);
 
@@ -89,6 +88,7 @@ void processVideoLoop(std::string filename, double ratio, int centroids)
 	  std::cout << percentage << "%\n";
 	}
     }
+  video.release();
 }
 
 void processFrame(cv::Mat* frame, int centroids, int currentFrame)
@@ -108,16 +108,13 @@ void processFrame(cv::Mat* frame, int centroids, int currentFrame)
   output.close();
 }
 
-int findElbow(std::string filename, int targetPixels, int minPixels)
+int findElbow(std::string filename, int targetPixels, int minPixels, double ratio)
 {
   cv::VideoCapture video(filename, cv::CAP_FFMPEG);
   assert(video.isOpened());
 
   cv::Mat resizedFrame{};
 
-  double ratio {findRatio(targetPixels, minPixels, 0.08,
-			  video.get(cv::CAP_PROP_FRAME_WIDTH),
-			  video.get(cv::CAP_PROP_FRAME_HEIGHT))};
 
   std::map<int, int> totalElbows{findElbowLoop(filename, 0.15, ratio)};
 
@@ -134,6 +131,7 @@ int findElbow(std::string filename, int targetPixels, int minPixels)
     }
   video.release();
   std::cout << "100% complete.\n";
+  video.release();
   return largestIndex;
 }
 
@@ -168,11 +166,11 @@ std::map<int, int> findElbowLoop(std::string filename, double percent, double ra
 
       if(fmod(static_cast<double>(currentFrame), round(100.0 / percent)) == 0)
 	{
-	  double percent {round((static_cast<double>(currentFrame) /
-				 static_cast<double>(frames)) * 100)};
-	  if (percent > last)
+	  double percentComplete{round((static_cast<double>(currentFrame) /
+					static_cast<double>(frames)) * 100)};
+	  if (percentComplete > last)
 	    {
-	      std::cout << percent << "% complete\n";
+	      std::cout << percentComplete << "% complete\n";
 
 	      last = percent;
 	    }
@@ -224,27 +222,55 @@ int findElbowFrame(cv::Mat* frame)
 
 double findBestRatio(std::string filename, double percent)
 {
-  std::vector<Color> colorVector15{processRatio(filename, percent, 15)};
-  for (int ratio{14}; ratio >= 1; --ratio)
-    {
-      std::vector<Color> smallerColorVector{processRatio(filename, percent, ratio)};
-    }
+  double totalProcessTime15{};
+  double smallerProcessTime{};
+  double averageProcessTime{};
+  double largestDifference{};
+  std::vector<double> largestDifferenceVector{};
+  std::vector<double> averageDifferenceVector{};
+  std::vector<double> totalTimeVector{};
+  std::vector<double> averageTimeVector{};
 
-  return 0.0;
+  std::vector<Color> colorVector15{extractColor(filename, percent, 15, totalProcessTime15, averageProcessTime)};
+  for (int ratio{1}; ratio < 15; ++ratio)
+    {
+      std::vector<Color> smallerColorVector{extractColor(filename, percent, ratio, smallerProcessTime, averageProcessTime)};
+      double averageDifference {compareAccuracy(colorVector15, smallerColorVector, largestDifference)};
+      std::cout << "The average color difference between ratios of 15 and " << ratio << " is " << averageDifference << "\n";
+      std::cout << "The total speed difference (in seconds) is  " << totalProcessTime15 - smallerProcessTime << "\n";
+      largestDifferenceVector.push_back(largestDifference);
+      averageDifferenceVector.push_back(averageDifference);
+      totalTimeVector.push_back(smallerProcessTime);
+      averageTimeVector.push_back(averageProcessTime);
+    }
+  
+  averageTimeVector.push_back(averageProcessTime);
+  totalTimeVector.push_back(totalProcessTime15);
+  largestDifferenceVector.push_back(-1);
+  averageDifferenceVector.push_back(-1);
+  return 0.08;
 }
 
-std::vector<Color> processRatio(std::string filename, double percent, double ratio)
+std::vector<Color> extractColor(std::string filename, double percent, double ratio, double &totalProcessTime_o, double &averageProcessTime_o)
 {
+  using std::chrono::high_resolution_clock;
+  using std::chrono::duration_cast;
+  using std::chrono::duration;
+  using std::chrono::milliseconds;
   ratio /= 100.0;
   cv::VideoCapture video{filename, cv::CAP_FFMPEG};
   assert(video.isOpened());
+
   cv::Mat resizedFrame{};
   int currentFrame{1};
+  int counter{0};
   double frames{video.get(cv::CAP_PROP_FRAME_COUNT)};
   std::vector<Color> colorVector{};
+  totalProcessTime_o = 0;
 
   while(true)
     {
+
       cv::Mat frame{};
 
       video >> frame;
@@ -255,38 +281,66 @@ std::vector<Color> processRatio(std::string filename, double percent, double rat
 	}
 
       double last {0};
+
       if(fmod(static_cast<double>(currentFrame), round(100.0 / percent)) == 0)
 	{
-	  double percent{round((static_cast<double>(currentFrame) /
-				frames)) * 100};
-	  if(percent > last)
+	  auto startTime = high_resolution_clock::now();
+	  double percentComplete{floor(((static_cast<double>(currentFrame) / frames)) * 100)};
+	  if(percentComplete > last)
 	    {
-	      std::cout << percent << "% complete\n";
-	      last = percent;
+	      std::cout << percentComplete << "% complete\n";
+	      last = percentComplete;
 	    }
 
 	  cv::resize(frame, resizedFrame, cv::Size(), ratio, ratio, cv::INTER_LANCZOS4);
-	  colorVector.push_back(processRatioFrame(&resizedFrame));
+
+	  for(auto &color : extractColorFrame(&resizedFrame))
+	    {
+	      colorVector.push_back(color);
+	    }
+	  ++counter;
+	  auto endTime = high_resolution_clock::now();
+	  duration<double, std::milli> frameProcessTime = duration_cast<milliseconds>(endTime - startTime);
+	  totalProcessTime_o += frameProcessTime.count() / 1000;
 	}
+      ++currentFrame;
     }
+  std::cout << "100% complete\n";
+  averageProcessTime_o = totalProcessTime_o / counter;
+  video.release();
   return colorVector;
 }
 
-Color processRatioFrame(cv::Mat *frame)
+std::vector<Color> extractColorFrame(cv::Mat *frame)
 {
   std::vector<Pixel> pixelVector{scanImage(*frame)};
   std::vector<Centroid> centroidVector{createAndProcessCentroids(pixelVector, 3, 20)};
-  
+
+  std::vector<Color> colorVector{};
+
+  for(auto &centroid : centroidVector)
+    {
+      colorVector.push_back(Color{static_cast<double>(centroid.getLocation().r), static_cast<double>(centroid.getLocation().g), static_cast<double>(centroid.getLocation().b)});
+    }
+
+  return colorVector;
+
 }
 
-double findRatio(int targetPixels, int minPixels, double ratio, double width, double height)
+double compareAccuracy(std::vector<Color> largerColorVector, std::vector<Color> smallerColorVector, double &largestDifference_o)
 {
-  if(width * height * ratio * ratio > targetPixels ||
-     width * height * ratio * ratio < minPixels)
+  double totalDifference{};
+  std::size_t totalColors{largerColorVector.size()};
+  largestDifference_o = 0;
+
+  for(std::size_t i {0}; i < totalColors; ++i)
     {
-      ratio = sqrt(static_cast<double>(targetPixels) /
-		   (static_cast<double>(height) *
-		    static_cast<double>(width)));
+      double difference = abs(deltaE00Difference(largerColorVector[i], smallerColorVector[i]));
+      if(difference > largestDifference_o)
+	{
+	  largestDifference_o = difference;
+	}
+      totalDifference += difference;
     }
-  return ratio;
+  return abs(totalDifference / static_cast<double>(totalColors));
 }
