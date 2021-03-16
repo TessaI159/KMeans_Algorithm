@@ -37,7 +37,7 @@ void processVideo(std::string filename, int centroids)
   std::cout << "Finding best ratio...\n";
   double ratio = findBestRatio(filename, 0.5);
 
-  if(centroids < 1 || centroids > MAX_CENTROIDS)
+  if(centroids <= 1 || centroids > MAX_CENTROIDS)
     {
       std::cout << "Finding optimal number of centroids...\n";
       centroids = findElbow(filename, ratio);
@@ -45,13 +45,9 @@ void processVideo(std::string filename, int centroids)
       std::cout << "Optimal number of centroids is " << centroids << "\n";
     }
 
-  cv::VideoCapture video(filename, cv::CAP_FFMPEG);
-  assert(video.isOpened());
-
   processVideoLoop(filename, ratio, centroids);
 
   std::cout << "100%\n";
-  video.release();
 }
 
 void processVideoLoop(std::string filename, double ratio, int centroids)
@@ -136,7 +132,6 @@ int findElbow(std::string filename, double ratio)
     }
   video.release();
   std::cout << "100% complete.\n";
-  video.release();
   return largestIndex;
 }
 
@@ -257,15 +252,7 @@ double findBestRatio(std::string filename, double percent)
   largestDifferenceVector.push_back(-1);
   averageDifferenceVector.push_back(-1);
 
-  averageTimeVector[14] = -1;
-  totalTimeVector[14] = -1;
-  largestDifferenceVector[14] = -1;
-  averageDifferenceVector[14] = -1;
 
-  averageTimeVector[0] = -1;
-  totalTimeVector[0] = -1;
-  largestDifferenceVector[0] = -1;
-  averageDifferenceVector[0] = -1;
   
   return 0.08;
 }
