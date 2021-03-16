@@ -8,9 +8,9 @@
 
 
 
- std::vector<Pixel> scanImage(cv::Mat &image)
+void scanImage(cv::Mat &image, std::vector<Pixel> &pixelVector)
 {
-  std::vector<Pixel> pixelVector{};
+  pixelVector.clear();
   int channels = image.channels();
   int id{-1};
 
@@ -39,5 +39,4 @@
 	}
     }
   assert(pixelVector.size() > 0);
-  return pixelVector;
 }

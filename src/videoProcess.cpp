@@ -22,7 +22,7 @@
 // Find a good way to calculate the optimal # of frames to sample for
 // elbow and accuracy tests (double percent)
 
-void processVideo(std::string filename, int centroids, int targetPixels, int minPixels)
+void processVideo(std::string filename, int centroids)
 {
   std::string output = "output";
   std::string outputFilename{PROJECT_PATH + "output", std::ios_base::app};
@@ -40,7 +40,7 @@ void processVideo(std::string filename, int centroids, int targetPixels, int min
   if(centroids < 1 || centroids > MAX_CENTROIDS)
     {
       std::cout << "Finding optimal number of centroids...\n";
-      centroids = findElbow(filename, targetPixels, minPixels, ratio);
+      centroids = findElbow(filename, ratio);
       // centroids = 3;
       std::cout << "Optimal number of centroids is " << centroids << "\n";
     }
@@ -96,27 +96,32 @@ void processFrame(cv::Mat* frame, int centroids, int currentFrame)
   std::ofstream output{};
   output.open(PROJECT_PATH + "output");
   assert(!output.fail());
-
-  std::vector<Pixel> pixelVector{scanImage(*frame)};
-  std::vector<Centroid> centroidVector{createAndProcessCentroids(pixelVector, centroids, 20)};
+  
+  // Needs changing
+  (void)currentFrame;
+  
+  std::vector<Pixel> pixelVector{};
+  scanImage(*frame, pixelVector);
+  std::vector<Centroid> centroidVector{};
+  createAndProcessCentroids(pixelVector, centroidVector, centroids, 20);
 
   for(auto &centroid : centroidVector)
     {
       centroid.printLocation(true, output, frame->rows * frame->cols);
     }
+  
   output << "\n";
   output.close();
 }
 
-int findElbow(std::string filename, int targetPixels, int minPixels, double ratio)
+int findElbow(std::string filename, double ratio)
 {
   cv::VideoCapture video(filename, cv::CAP_FFMPEG);
   assert(video.isOpened());
 
   cv::Mat resizedFrame{};
 
-
-  std::map<int, int> totalElbows{findElbowLoop(filename, 0.15, ratio)};
+  std::map<int, int> totalElbows{findElbowLoop(filename, 0.5, ratio)};
 
   int largest{totalElbows[1]};
   int largestIndex{1};
@@ -141,7 +146,6 @@ std::map<int, int> findElbowLoop(std::string filename, double percent, double ra
   cv::VideoCapture video(filename, cv::CAP_FFMPEG);
   assert(video.isOpened());
 
-  percent *= 100;
   int currentFrame{1};
   int frames(video.get(cv::CAP_PROP_FRAME_COUNT));
   std::map<int, int> totalElbows{};
@@ -163,7 +167,6 @@ std::map<int, int> findElbowLoop(std::string filename, double percent, double ra
 	{
 	  break;
 	}
-
       if(fmod(static_cast<double>(currentFrame), round(100.0 / percent)) == 0)
 	{
 	  double percentComplete{round((static_cast<double>(currentFrame) /
@@ -183,16 +186,17 @@ std::map<int, int> findElbowLoop(std::string filename, double percent, double ra
   return totalElbows;
 }
 
-// I'm 99% sure there's a more elegant, less cpu and memory intensive way to do this
 int findElbowFrame(cv::Mat* frame)
 {
-  std::vector<Pixel> pixelVector{scanImage(*frame)};
+  std::vector<Pixel> pixelVector{};
+  scanImage(*frame, pixelVector);
   std::vector<double> distortionVector{};
   std::vector<double> absoluteChange{};
 
   for(int i{1}; i <= MAX_CENTROIDS; ++i)
     {
-      std::vector<Centroid> centroidVector{createAndProcessCentroids(pixelVector, i, 20)};
+      std::vector<Centroid> centroidVector{};
+      createAndProcessCentroids(pixelVector, centroidVector, i, 20);
       double averageDistortion{0.0};
 
       for(auto &centroid : centroidVector)
@@ -222,31 +226,34 @@ int findElbowFrame(cv::Mat* frame)
 
 double findBestRatio(std::string filename, double percent)
 {
-  double totalProcessTime15{};
+  double totalProcessTimeLarge{};
   double smallerProcessTime{};
   double averageProcessTime{};
-  double averageProcessTime15{};
+  double averageProcessTimeLarge{};
   double largestDifference{};
   std::vector<double> largestDifferenceVector{};
   std::vector<double> averageDifferenceVector{};
   std::vector<double> totalTimeVector{};
   std::vector<double> averageTimeVector{};
+  const int minRatio{1};
+  const int maxRatio{8};
 
-  std::vector<Color> colorVector15{extractColor(filename, percent, 15, totalProcessTime15, averageProcessTime15)};
-  for (int ratio{1}; ratio < 15; ++ratio)
+  std::vector<Color> colorVectorLarge{extractColor(filename, percent, maxRatio, totalProcessTimeLarge, averageProcessTimeLarge)};
+  for (int ratio{minRatio}; ratio < maxRatio; ++ratio)
     {
       std::vector<Color> smallerColorVector{extractColor(filename, percent, ratio, smallerProcessTime, averageProcessTime)};
-      double averageDifference {compareAccuracy(colorVector15, smallerColorVector, largestDifference)};
-      std::cout << "The average color difference between ratios of 15 and " << ratio << " is " << averageDifference << "\n";
-      std::cout << "The total speed difference (per frame) is " << averageProcessTime15 - averageProcessTime << "\n";
+      double averageDifference {compareAccuracy(colorVectorLarge, smallerColorVector, largestDifference)};
+      std::cout << "The average color difference between ratios of " << maxRatio << " and " << ratio << " is " << averageDifference << "\n";
+      std::cout << "The total speed difference (per frame) is " << averageProcessTimeLarge - averageProcessTime << "\n";
+      
       largestDifferenceVector.push_back(largestDifference);
       averageDifferenceVector.push_back(averageDifference);
       totalTimeVector.push_back(smallerProcessTime);
       averageTimeVector.push_back(averageProcessTime);
     }
   
-  averageTimeVector.push_back(averageProcessTime15);
-  totalTimeVector.push_back(totalProcessTime15);
+  averageTimeVector.push_back(averageProcessTimeLarge);
+  totalTimeVector.push_back(totalProcessTimeLarge);
   largestDifferenceVector.push_back(-1);
   averageDifferenceVector.push_back(-1);
 
@@ -326,21 +333,27 @@ std::vector<Color> extractColor(std::string filename, double percent, double rat
 
 std::vector<Color> extractColorFrame(cv::Mat *frame)
 {
-  std::vector<Pixel> pixelVector{scanImage(*frame)};
-  std::vector<Centroid> centroidVector{createAndProcessCentroids(pixelVector, 3, 20)};
+  std::vector<Pixel> pixelVector{};
+  scanImage(*frame, pixelVector);
+  std::vector<Centroid> centroidVector{};
+  createAndProcessCentroids(pixelVector, centroidVector, 3, 20);
 
   std::vector<Color> colorVector{};
 
   for(auto &centroid : centroidVector)
     {
-      colorVector.push_back(Color{static_cast<double>(centroid.getLocation().r), static_cast<double>(centroid.getLocation().g), static_cast<double>(centroid.getLocation().b)});
+      colorVector.push_back(Color{static_cast<double>(centroid.getLocation().r),
+				  static_cast<double>(centroid.getLocation().g),
+				  static_cast<double>(centroid.getLocation().b)});
     }
 
   return colorVector;
 
 }
 
-double compareAccuracy(std::vector<Color> largerColorVector, std::vector<Color> smallerColorVector, double &largestDifference_o)
+double compareAccuracy(std::vector<Color> largerColorVector,
+		       std::vector<Color> smallerColorVector,
+		       double &largestDifference_o)
 {
   double totalDifference{};
   std::size_t totalColors{largerColorVector.size()};

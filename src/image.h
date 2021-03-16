@@ -7,6 +7,12 @@
 
 #include <string>
 
-std::vector<Pixel> scanImage(cv::Mat &image);
+
+// Takes a reference to an image in cv::Mat form
+// and a reference to a vector of pixels
+// Clears whatever was already in the vector
+// and fills is with pixel objects (pixel.h)
+// Each pixel is assigned a unique ID here
+void scanImage(cv::Mat &image, std::vector<Pixel> &pixelVector);
 
 #endif

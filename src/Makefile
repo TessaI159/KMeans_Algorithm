@@ -4,7 +4,7 @@
 #
 #-----------
 
-all: main.o centroid.o image.o kmeans.o videoProcess.o constants.h main.cpp color.o #$(LIB_NAME).a
+all: main.o centroid.o image.o kmeans.o videoProcess.o color.o constants.h main.cpp #$(LIB_NAME).a
 	@$(CXX) $(LDFLAGS) main.o centroid.o image.o kmeans.o videoProcess.o color.o -o main.run $(LDLIBS); mv main.run $(ROOT_DIR)
 
 main.o: main.cpp videoProcess.h

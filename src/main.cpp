@@ -27,8 +27,6 @@
 int main(int argc, char* args[])
 {
   bool statistics{true};
-  int targetPixels{3000};
-  int minPixels{200};
   std::string assets = "assets/";
   std::string filename{PROJECT_PATH + assets};
 
@@ -41,16 +39,9 @@ int main(int argc, char* args[])
 	  std::string fileAddition = args[1];
 	  filename += fileAddition;
 	}
-      else if(argc == 4)
-	{
-	  targetPixels = atoi(args[1]);
-	  minPixels = atoi(args[2]);
-	  std::string fileAddition = args[3];
-	  filename += fileAddition;
-	}
       else
 	{
-	  std::cerr << "Script videoName [targetPixels minPixels]";
+	  std::cerr << "Script videoName\n";
 	  return -1;
 	}
 
@@ -59,7 +50,7 @@ int main(int argc, char* args[])
       using std::chrono::duration;
       using std::chrono::milliseconds;
       auto startTime = high_resolution_clock::now();
-      processVideo(filename, -1, targetPixels, minPixels);
+      processVideo(filename, -1);
       auto endTime = high_resolution_clock::now();
 
       duration<double, std::milli> processTime = duration_cast<milliseconds>(endTime - startTime);
@@ -83,16 +74,14 @@ int main(int argc, char* args[])
       else
 	{
 	  output << processTimeDouble  << "\n";
-	  output << targetPixels << "\n";
 	}
       output.close();
 
     }
   else
     {
-      processVideo(filename, -1, targetPixels, minPixels);
+      processVideo(filename, -1);
     }
-
 
   return 0;
 }

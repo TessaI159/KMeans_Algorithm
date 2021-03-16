@@ -7,15 +7,16 @@
 #include <iostream>
 #include <cassert>
 
-std::vector<Centroid> createCentroids(std::vector<Pixel> &pixelVector, int k)
+void createCentroids(std::vector<Pixel> &pixelVector,
+		     std::vector<Centroid> &centroidVector, int k)
 {
+  centroidVector.clear();
   if(k <= 0 || k > MAX_CENTROIDS)
     {
       std::cout << k;
       std::cerr << " Invalid number of centroids. Defaulting to 3\n";
       k = 3;
     }
-  std::vector<Centroid> centroidVector{};
   int pixelsPerCentroid{static_cast<int>(pixelVector.size()) / k};
   int leftoverPixels{static_cast<int>(pixelVector.size()) % k};
   int id{-1};
@@ -40,7 +41,6 @@ std::vector<Centroid> createCentroids(std::vector<Pixel> &pixelVector, int k)
 	  centroidVector[centroidVector.size() - 1].addPixel(&pixelVector[i]);
 	}
     }
-  return centroidVector;
 }
 
 void updateCentroidLocations(std::vector<Centroid> &centroidVector)
@@ -124,7 +124,9 @@ bool swap(std::vector<Centroid> &centroidVector, Pixel* pixel_ptr, int centroidT
 
 std::vector<Centroid> createAndProcessCentroids(std::vector<Pixel> &pixelVector, int numCentroids, int maxIter)
 {
-  std::vector<Centroid> centroidVector{createCentroids(pixelVector, numCentroids)};
+  std::vector<Centroid> centroidVector{};
+  createCentroids(pixelVector, centroidVector, numCentroids);
+  
   int currentIter{1};
 
   while(updateCentroids(centroidVector, pixelVector))

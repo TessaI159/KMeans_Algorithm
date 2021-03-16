@@ -10,12 +10,11 @@
 #include <string>
 #include <map>
 
-void processVideo(std::string filename, int centroids,
-		  int targetPixels, int minPixels);
+void processVideo(std::string filename, int centroids);
 void processVideoLoop(std::string filename, double ratio, int centroids);
 void processFrame(cv::Mat *frame, int centroids, int currentFrame);
 
-int findElbow(std::string filename, int targetPixels, int minPixels, double ratio);
+int findElbow(std::string filename, double ratio);
 std::map<int, int> findElbowLoop(std::string filename, double percent, double ratio);
 int findElbowFrame(cv::Mat* frame);
 
