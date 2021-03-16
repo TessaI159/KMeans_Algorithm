@@ -4,6 +4,7 @@
 #include "kmeans.h"
 #include "image.h"
 #include "color.h"
+#include "difference.h"
 #include "constants.h"
 
 #include <opencv2/opencv.hpp>
@@ -25,7 +26,7 @@
 void processVideo(std::string filename, int centroids)
 {
   std::string output = "output";
-  std::string outputFilename{PROJECT_PATH + "output", std::ios_base::app};
+  std::string outputFilename{PROJECT_PATH + "output"};
   std::ifstream outputCheck{};
   outputCheck.open(outputFilename);
   if(!outputCheck.fail())
@@ -90,7 +91,7 @@ void processVideoLoop(std::string filename, double ratio, int centroids)
 void processFrame(cv::Mat* frame, int centroids, int currentFrame)
 {
   std::ofstream output{};
-  output.open(PROJECT_PATH + "output");
+  output.open(PROJECT_PATH + "output", std::ios_base::app);
   assert(!output.fail());
 
   // Needs changing
