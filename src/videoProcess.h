@@ -56,12 +56,19 @@ double findBestRatio(std::string filename, double percent);
 // Creates a vector of all the dominant colors from percent% of frames in the video filename
 // Resizes each frame using ratio.
 // Calls extractColorFrame once per frame
-std::vector<Color> extractColor(std::string filename, double percent, double ratio,
-				double &totalProcessTime_o, double &averageProcessTime_o);
+// colorVector is cleared and then created as an out return variable to the caller
+void extractColor(std::string filename, double percent, double ratio,
+		  double &totalProcessTime_o, double &averageProcessTime_o,
+		  std::vector<Color> &colorVector);
+
+int extractColorLoop(std::string filename, double percent, double ratio,
+			std::vector<Color> &colorVector);
 
 // Find the 3 dominant colors in an image and returns them in a vector
 // Uses 3 because that is the most common number of centroids that will be
 // picked by findElbow
+// I don't mind returning this vector by value instead of
+// reference because it only contains 3 colors
 std::vector<Color> extractColorFrame(cv::Mat *frame);
 
 // Finds the total difference in color using deltaE00Difference (color.cpp)

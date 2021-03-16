@@ -92,10 +92,10 @@ void processFrame(cv::Mat* frame, int centroids, int currentFrame)
   std::ofstream output{};
   output.open(PROJECT_PATH + "output");
   assert(!output.fail());
-  
+
   // Needs changing
   (void)currentFrame;
-  
+
   std::vector<Pixel> pixelVector{};
   scanImage(*frame, pixelVector);
   std::vector<Centroid> centroidVector{};
@@ -105,7 +105,7 @@ void processFrame(cv::Mat* frame, int centroids, int currentFrame)
     {
       centroid.printLocation(true, output, frame->rows * frame->cols);
     }
-  
+
   output << "\n";
   output.close();
 }
@@ -233,49 +233,70 @@ double findBestRatio(std::string filename, double percent)
   const int minRatio{1};
   const int maxRatio{8};
 
-  std::vector<Color> colorVectorLarge{extractColor(filename, percent, maxRatio, totalProcessTimeLarge, averageProcessTimeLarge)};
+  std::vector<Color> colorVectorLarge{};
+  extractColor(filename, percent, maxRatio, totalProcessTimeLarge,
+	       averageProcessTimeLarge, colorVectorLarge);
   for (int ratio{minRatio}; ratio < maxRatio; ++ratio)
     {
-      std::vector<Color> smallerColorVector{extractColor(filename, percent, ratio, smallerProcessTime, averageProcessTime)};
+      std::vector<Color> smallerColorVector{};
+      extractColor(filename, percent, ratio, smallerProcessTime,
+		   averageProcessTime, smallerColorVector);
       double averageDifference {compareAccuracy(colorVectorLarge, smallerColorVector, largestDifference)};
       std::cout << "The average color difference between ratios of " << maxRatio << " and " << ratio << " is " << averageDifference << "\n";
       std::cout << "The total speed difference (per frame) is " << averageProcessTimeLarge - averageProcessTime << "\n";
-      
+
       largestDifferenceVector.push_back(largestDifference);
       averageDifferenceVector.push_back(averageDifference);
       totalTimeVector.push_back(smallerProcessTime);
       averageTimeVector.push_back(averageProcessTime);
     }
-  
+
   averageTimeVector.push_back(averageProcessTimeLarge);
   totalTimeVector.push_back(totalProcessTimeLarge);
   largestDifferenceVector.push_back(-1);
   averageDifferenceVector.push_back(-1);
 
 
-  
+
   return 0.08;
 }
 
 // Refactor
-std::vector<Color> extractColor(std::string filename, double percent, double ratio, double &totalProcessTime_o, double &averageProcessTime_o)
+void extractColor(std::string filename, double percent,
+		  double ratio, double &totalProcessTime_o,
+		  double &averageProcessTime_o, std::vector<Color> &colorVector)
 {
+  colorVector.clear();
+  totalProcessTime_o = 0.0;
   using std::chrono::high_resolution_clock;
   using std::chrono::duration_cast;
   using std::chrono::duration;
   using std::chrono::milliseconds;
   ratio /= 100.0;
+
+  totalProcessTime_o = 0;
+  auto startTime = high_resolution_clock::now();
+
+  int counter {extractColorLoop(filename, percent, ratio, colorVector)};
+  auto endTime = high_resolution_clock::now();
+  duration<double, std::milli> totalProcessTime = duration_cast<milliseconds>
+    (endTime - startTime);
+
+  totalProcessTime_o = totalProcessTime.count() / 1000;
+  averageProcessTime_o = totalProcessTime_o / counter;
+}
+
+int extractColorLoop(std::string filename, double percent, double ratio,
+			std::vector<Color> &colorVector)
+{
+  colorVector.clear();
   cv::VideoCapture video{filename, cv::CAP_FFMPEG};
-  assert(video.isOpened());
 
   cv::Mat resizedFrame{};
   int currentFrame{1};
-  int counter{0};
   double frames{video.get(cv::CAP_PROP_FRAME_COUNT)};
-  std::vector<Color> colorVector{};
-  totalProcessTime_o = 0;
-
-  while(true)
+  int counter{10};
+    while(true)
     {
 
       cv::Mat frame{};
@@ -291,7 +312,6 @@ std::vector<Color> extractColor(std::string filename, double percent, double rat
 
       if(fmod(static_cast<double>(currentFrame), round(100.0 / percent)) == 0)
 	{
-	  auto startTime = high_resolution_clock::now();
 	  double percentComplete{floor(((static_cast<double>(currentFrame) / frames)) * 100)};
 	  if(percentComplete > last)
 	    {
@@ -306,16 +326,10 @@ std::vector<Color> extractColor(std::string filename, double percent, double rat
 	      colorVector.push_back(color);
 	    }
 	  ++counter;
-	  auto endTime = high_resolution_clock::now();
-	  duration<double, std::milli> frameProcessTime = duration_cast<milliseconds>(endTime - startTime);
-	  totalProcessTime_o += frameProcessTime.count() / 1000;
 	}
       ++currentFrame;
     }
-  std::cout << "100% complete\n";
-  averageProcessTime_o = totalProcessTime_o / counter;
-  video.release();
-  return colorVector;
+    return counter;
 }
 
 std::vector<Color> extractColorFrame(cv::Mat *frame)
@@ -343,6 +357,7 @@ double compareAccuracy(std::vector<Color> largerColorVector,
 		       double &largestDifference_o)
 {
   double totalDifference{};
+  largestDifference_o = 0.0;
   std::size_t totalColors{largerColorVector.size()};
   largestDifference_o = 0;
 
