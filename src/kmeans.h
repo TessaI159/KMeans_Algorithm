@@ -34,7 +34,7 @@ int smallestElement(double distances[], std::size_t size);
 // 
 bool swap(std::vector<Centroid> &centroidVector, Pixel* pixel, int centroidToSwapID);
 
-std::vector<Centroid> createAndProcessCentroids(std::vector<Pixel> &pixelVector,
+void createAndProcessCentroids(std::vector<Pixel> &pixelVector,
 						std::vector<Centroid> &centroidVector,
 						int numCentroids, int maxIter);
 

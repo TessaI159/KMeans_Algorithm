@@ -122,9 +122,9 @@ bool swap(std::vector<Centroid> &centroidVector, Pixel* pixel_ptr, int centroidT
 }
 
 
-std::vector<Centroid> createAndProcessCentroids(std::vector<Pixel> &pixelVector, int numCentroids, int maxIter)
+void createAndProcessCentroids(std::vector<Pixel> &pixelVector, std::vector<Centroid> &centroidVector, int numCentroids, int maxIter)
 {
-  std::vector<Centroid> centroidVector{};
+  centroidVector.clear();
   createCentroids(pixelVector, centroidVector, numCentroids);
   
   int currentIter{1};
@@ -138,5 +138,4 @@ std::vector<Centroid> createAndProcessCentroids(std::vector<Pixel> &pixelVector,
 
       ++currentIter;
     }
-  return centroidVector;
 }
