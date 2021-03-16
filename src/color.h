@@ -101,7 +101,7 @@ public:
 };
 
 
-// Difference and Conversion functions provided by https://www.easyrgb.com/en/math.php
+// Math shamelessly taken from https://en.wikipedia.org/wiki/Color_difference
 // Finds the difference between the two colors using the deltaE 2000 method by CIE
 // Note: this function is quasimetric
 // You may get a different result by plugging in (x, y) than you would get plugging

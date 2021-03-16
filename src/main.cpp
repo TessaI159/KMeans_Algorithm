@@ -21,7 +21,6 @@
 // Sample ~10% of frames to test for color accuracy/speed
 // Communicate how long the process will take, give or take a few seconds
 
-// DOCUMENTATION
 
 
 int main(int argc, char* args[])
@@ -32,8 +31,6 @@ int main(int argc, char* args[])
 
   if (statistics)
     {
-
-
       if(argc == 2)
 	{
 	  std::string fileAddition = args[1];
