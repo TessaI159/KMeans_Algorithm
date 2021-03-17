@@ -20,3 +20,5 @@ notes.txt
 *.python*
 OpenCVPaths
 output*
+.dir-locals.el
+deps

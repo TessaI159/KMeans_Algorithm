@@ -20,7 +20,6 @@
 // Guesstimate how long the process will take, give or take a few seconds
 
 
-
 int main(int argc, char* args[])
 {
   bool statistics{true};
