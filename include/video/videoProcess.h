@@ -2,7 +2,7 @@
 #define VIDEOPROCESS_H
 
 #include "../logic/centroid.h"
-#include "../pixel.h"
+#include "../header-only/pixel.h"
 #include "../color/color.h"
 
 #include <opencv2/opencv.hpp>

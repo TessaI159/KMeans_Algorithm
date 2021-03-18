@@ -1,7 +1,7 @@
 #ifndef CENTROID_H
 #define CENTROID_H
 
-#include "../pixel.h"
+#include "../header-only/pixel.h"
 
 #include <vector>
 #include <fstream>
