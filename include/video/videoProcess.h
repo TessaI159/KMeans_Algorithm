@@ -1,9 +1,9 @@
 #ifndef VIDEOPROCESS_H
 #define VIDEOPROCESS_H
 
-#include "../src/centroid.h"
-#include "../src/pixel.h"
-#include "../src/color.h"
+#include "../logic/centroid.h"
+#include "../pixel.h"
+#include "../color/color.h"
 
 #include <opencv2/opencv.hpp>
 

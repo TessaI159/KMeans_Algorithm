@@ -1,6 +1,6 @@
-#include "videoProcess.h"
+#include "logic/videoProcess.h"
 #include "constants.h"
-#include "color.h"
+#include "color/color.h"
 
 #include <opencv2/opencv.hpp>
 
