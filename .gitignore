@@ -22,3 +22,4 @@ OpenCVPaths
 output*
 .dir-locals.el
 deps
+build
