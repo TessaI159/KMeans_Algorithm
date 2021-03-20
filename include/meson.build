@@ -1,0 +1,1 @@
+install_headers('Lab.h', 'Lch.h', 'XYZ.h', 'centroid.h', 'color.h', 'constants.h', 'deocde.h', 'difference.h', 'encode.h', 'image.h', 'kmeans.h', 'pixel.h', 'sRGB.h', 'videoProcess.h')
