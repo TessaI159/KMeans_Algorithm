@@ -73,12 +73,13 @@ int extractColorLoop(std::string filename, double percent, double ratio,
 // picked by findElbow
 // I don't mind returning this vector by value instead of
 // reference because it only contains 3 colors
-std::vector<Color> extractColorFrame(cv::Mat *frame);
+std::vector<Color> extractColorFrame(cv::Mat *frame, int currentFrame);
 
 // Finds and returns the average difference in color using deltaE00Difference (color.cpp)
 // largestDistance_o is changed to be the largest absolute difference
 // between two colors
-double compareAccuracy(std::vector<Color> largerColorVector, std::vector<Color> smallerColorVector, double &largestDistance_o);
+double compareAccuracy(std::vector<Color> largerColorVector,
+		       std::vector<Color> smallerColorVector, double &largestDistance_o);
 
 
 #endif

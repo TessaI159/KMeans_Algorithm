@@ -30,14 +30,19 @@ private:
   XYZ m_xyz;
   Lab m_lab;
   Lch m_lch;
+  int m_frame;
+  int m_centroidIndex;
 public:
   Color();
   Color(double r, double g, double b);
+  Color(double r, double g, double b, int frame, int centroidIndex);
 
   sRGB rgb();
   XYZ xyz();
   Lab lab();
   Lch lch();
+  int frame();
+  int centroidIndex();
 
   void outputSelf();
 };

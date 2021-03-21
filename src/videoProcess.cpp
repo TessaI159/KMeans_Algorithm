@@ -231,27 +231,18 @@ double findBestRatio(std::string filename, double percent)
   std::vector<double> averageDifferenceVector{};
   std::vector<double> totalTimeVector{};
   std::vector<double> averageTimeVector{};
+  std::vector<int> lostCentroids{};
   const int minRatio{1};
   const int maxRatio{8};
 
   std::vector<Color> colorVectorLarge{};
   extractColor(filename, percent, maxRatio, totalProcessTimeLarge,
 	       averageProcessTimeLarge, colorVectorLarge);
-  std::cout << "Large vector\n";
-  for(auto &color : colorVectorLarge)
-    {
-      color.outputSelf();
-    }
   for (int ratio{minRatio}; ratio < maxRatio; ++ratio)
     {
       std::vector<Color> colorVectorSmall{};
       extractColor(filename, percent, ratio, totalProcessTimeSmall,
 		   averageProcessTimeSmall, colorVectorSmall);
-      std::cout << "Small vector\n";
-      for(auto &color : colorVectorSmall)
-	{
-	  color.outputSelf();
-	}
       double averageDifference {compareAccuracy(colorVectorLarge, colorVectorSmall, largestDifference)};
       std::cout << "The average color difference between ratios of " << maxRatio << " and " << ratio << " is " << averageDifference << "\n";
       std::cout << "The largest color difference between ratios of " << maxRatio << " and " << ratio << " is " << largestDifference << "\n";
@@ -261,10 +252,8 @@ double findBestRatio(std::string filename, double percent)
       averageDifferenceVector.push_back(averageDifference);
       totalTimeVector.push_back(totalProcessTimeSmall);
       averageTimeVector.push_back(averageProcessTimeSmall);
+      lostCentroids.push_back(colorVectorLarge.size() - colorVectorSmall.size());
     }
-
-
-
   return 0.08;
 }
 
@@ -327,7 +316,7 @@ int extractColorLoop(std::string filename, double percent, double ratio,
 
 	  cv::resize(frame, resizedFrame, cv::Size(), ratio, ratio, cv::INTER_LANCZOS4);
 
-	  for(auto &color : extractColorFrame(&resizedFrame))
+	  for(auto &color : extractColorFrame(&resizedFrame, currentFrame))
 	    {
 	      colorVector.push_back(color);
 	    }
@@ -338,7 +327,7 @@ int extractColorLoop(std::string filename, double percent, double ratio,
   return counter;
 }
 
-std::vector<Color> extractColorFrame(cv::Mat *frame)
+std::vector<Color> extractColorFrame(cv::Mat *frame, int currentFrame)
 {
   std::vector<Pixel> pixelVector{};
   scanImage(*frame, pixelVector);
@@ -347,11 +336,17 @@ std::vector<Color> extractColorFrame(cv::Mat *frame)
 
   std::vector<Color> colorVector{};
 
-  for(auto &centroid : centroidVector)
+  for(std::size_t i{0}; i < centroidVector.size(); ++i)
     {
-      colorVector.push_back(Color{static_cast<double>(centroid.getLocation().r),
-				  static_cast<double>(centroid.getLocation().g),
-				  static_cast<double>(centroid.getLocation().b)});
+      if(centroidVector[i].getLocation().r >= 0 || centroidVector[i].getLocation().g >= 0 ||
+	 centroidVector[i].getLocation().b >= 0)
+	{
+	  colorVector.push_back(Color{static_cast<double>(centroidVector[i].getLocation().r),
+				      static_cast<double>(centroidVector[i].getLocation().g),
+				      static_cast<double>(centroidVector[i].getLocation().b),
+				      currentFrame, static_cast<int>(i)});
+	}
+
     }
 
   return colorVector;
@@ -371,14 +366,18 @@ double compareAccuracy(std::vector<Color> colorVectorLarge,
 
   for(std::size_t i {0}; i < totalColors; ++i)
     {
-      double difference = abs(deltaE00Difference(colorVectorLarge[i], colorVectorSmall[i]));
-      if(difference > largestDifference_o)
+      if(colorVectorLarge[i].frame() == colorVectorSmall[i].frame() &&
+	 colorVectorLarge[i].centroidIndex() == colorVectorSmall[i].centroidIndex())
 	{
-	  largestColorDifference = colorVectorLarge[i];
-	  smallestColorDifference = colorVectorSmall[i];
-	  largestDifference_o = difference;
+	  double difference = abs(deltaE00Difference(colorVectorLarge[i], colorVectorSmall[i]));
+	  if(difference > largestDifference_o)
+	    {
+	      largestColorDifference = colorVectorLarge[i];
+	      smallestColorDifference = colorVectorSmall[i];
+	      largestDifference_o = difference;
+	    }
+	  totalDifference += difference;
 	}
-      totalDifference += difference;
     }
   return abs(totalDifference / static_cast<double>(totalColors));
 }

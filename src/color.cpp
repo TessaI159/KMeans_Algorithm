@@ -23,6 +23,18 @@ Color::Color(double r, double g, double b)
   CIELabtoCIELchConversion();
 }
 
+Color::Color(double r, double g, double b, int frame, int centroidIndex)
+{
+  m_rgb.m_r = r;
+  m_rgb.m_g = g;
+  m_rgb.m_b = b;
+  sRGBtoXYZConversion();
+  XYZtoCIELabConversion();
+  CIELabtoCIELchConversion();
+  m_frame = frame;
+  m_centroidIndex = centroidIndex;
+}
+
 void Color::sRGBtoXYZConversion()
 {
   double vR {m_rgb.m_r / 255.0};
@@ -126,6 +138,8 @@ sRGB Color::rgb(){ return m_rgb; }
 XYZ Color::xyz(){ return m_xyz; }
 Lab Color::lab(){ return m_lab; }
 Lch Color::lch(){ return m_lch; }
+int Color::frame(){ return m_frame; }
+int Color::centroidIndex(){ return m_centroidIndex; }
 
 void Color::outputSelf()
 {
