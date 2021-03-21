@@ -63,6 +63,8 @@ void extractColor(std::string filename, double percent, double ratio,
 
 
 // Main logic loop of extractColor. Synonymous to findElbowLoop for findElbow.
+// Tests percent% of frames at ratio and returns a vector through an out variable
+// Containing all the colors found
 int extractColorLoop(std::string filename, double percent, double ratio,
 			std::vector<Color> &colorVector);
 
@@ -73,8 +75,7 @@ int extractColorLoop(std::string filename, double percent, double ratio,
 // reference because it only contains 3 colors
 std::vector<Color> extractColorFrame(cv::Mat *frame);
 
-// Finds the total difference in color using deltaE00Difference (color.cpp)
-// Returns that difference divided by the size of largeColorVector
+// Finds and returns the average difference in color using deltaE00Difference (color.cpp)
 // largestDistance_o is changed to be the largest absolute difference
 // between two colors
 double compareAccuracy(std::vector<Color> largerColorVector, std::vector<Color> smallerColorVector, double &largestDistance_o);

@@ -38,6 +38,8 @@ public:
   XYZ xyz();
   Lab lab();
   Lch lch();
+
+  void outputSelf();
 };
 
 

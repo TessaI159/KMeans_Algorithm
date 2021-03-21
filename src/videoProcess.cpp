@@ -223,8 +223,8 @@ int findElbowFrame(cv::Mat* frame)
 double findBestRatio(std::string filename, double percent)
 {
   double totalProcessTimeLarge{};
-  double smallerProcessTime{};
-  double averageProcessTime{};
+  double totalProcessTimeSmall{};
+  double averageProcessTimeSmall{};
   double averageProcessTimeLarge{};
   double largestDifference{};
   std::vector<double> largestDifferenceVector{};
@@ -237,25 +237,31 @@ double findBestRatio(std::string filename, double percent)
   std::vector<Color> colorVectorLarge{};
   extractColor(filename, percent, maxRatio, totalProcessTimeLarge,
 	       averageProcessTimeLarge, colorVectorLarge);
+  std::cout << "Large vector\n";
+  for(auto &color : colorVectorLarge)
+    {
+      color.outputSelf();
+    }
   for (int ratio{minRatio}; ratio < maxRatio; ++ratio)
     {
-      std::vector<Color> smallerColorVector{};
-      extractColor(filename, percent, ratio, smallerProcessTime,
-		   averageProcessTime, smallerColorVector);
-      double averageDifference {compareAccuracy(colorVectorLarge, smallerColorVector, largestDifference)};
+      std::vector<Color> colorVectorSmall{};
+      extractColor(filename, percent, ratio, totalProcessTimeSmall,
+		   averageProcessTimeSmall, colorVectorSmall);
+      std::cout << "Small vector\n";
+      for(auto &color : colorVectorSmall)
+	{
+	  color.outputSelf();
+	}
+      double averageDifference {compareAccuracy(colorVectorLarge, colorVectorSmall, largestDifference)};
       std::cout << "The average color difference between ratios of " << maxRatio << " and " << ratio << " is " << averageDifference << "\n";
-      std::cout << "The total speed difference (per frame) is " << averageProcessTimeLarge - averageProcessTime << "\n";
+      std::cout << "The largest color difference between ratios of " << maxRatio << " and " << ratio << " is " << largestDifference << "\n";
+      std::cout << "The average speed difference (per frame) is " << averageProcessTimeLarge - averageProcessTimeSmall << "\n";
 
       largestDifferenceVector.push_back(largestDifference);
       averageDifferenceVector.push_back(averageDifference);
-      totalTimeVector.push_back(smallerProcessTime);
-      averageTimeVector.push_back(averageProcessTime);
+      totalTimeVector.push_back(totalProcessTimeSmall);
+      averageTimeVector.push_back(averageProcessTimeSmall);
     }
-
-  averageTimeVector.push_back(averageProcessTimeLarge);
-  totalTimeVector.push_back(totalProcessTimeLarge);
-  largestDifferenceVector.push_back(-1);
-  averageDifferenceVector.push_back(-1);
 
 
 
@@ -287,7 +293,7 @@ void extractColor(std::string filename, double percent,
 }
 
 int extractColorLoop(std::string filename, double percent, double ratio,
-			std::vector<Color> &colorVector)
+		     std::vector<Color> &colorVector)
 {
   colorVector.clear();
   cv::VideoCapture video{filename, cv::CAP_FFMPEG};
@@ -296,7 +302,7 @@ int extractColorLoop(std::string filename, double percent, double ratio,
   int currentFrame{1};
   double frames{video.get(cv::CAP_PROP_FRAME_COUNT)};
   int counter{10};
-    while(true)
+  while(true)
     {
 
       cv::Mat frame{};
@@ -329,7 +335,7 @@ int extractColorLoop(std::string filename, double percent, double ratio,
 	}
       ++currentFrame;
     }
-    return counter;
+  return counter;
 }
 
 std::vector<Color> extractColorFrame(cv::Mat *frame)
@@ -352,20 +358,24 @@ std::vector<Color> extractColorFrame(cv::Mat *frame)
 
 }
 
-double compareAccuracy(std::vector<Color> largerColorVector,
-		       std::vector<Color> smallerColorVector,
+double compareAccuracy(std::vector<Color> colorVectorLarge,
+		       std::vector<Color> colorVectorSmall,
 		       double &largestDifference_o)
 {
   double totalDifference{};
   largestDifference_o = 0.0;
-  std::size_t totalColors{largerColorVector.size()};
+  std::size_t totalColors{colorVectorLarge.size()};
+  Color largestColorDifference{};
+  Color smallestColorDifference{};
   largestDifference_o = 0;
 
   for(std::size_t i {0}; i < totalColors; ++i)
     {
-      double difference = abs(deltaE00Difference(largerColorVector[i], smallerColorVector[i]));
+      double difference = abs(deltaE00Difference(colorVectorLarge[i], colorVectorSmall[i]));
       if(difference > largestDifference_o)
 	{
+	  largestColorDifference = colorVectorLarge[i];
+	  smallestColorDifference = colorVectorSmall[i];
 	  largestDifference_o = difference;
 	}
       totalDifference += difference;

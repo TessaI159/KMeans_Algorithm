@@ -127,5 +127,10 @@ XYZ Color::xyz(){ return m_xyz; }
 Lab Color::lab(){ return m_lab; }
 Lch Color::lch(){ return m_lch; }
 
-
+void Color::outputSelf()
+{
+  std::cout << "(" << m_rgb.m_r << ", ";
+  std::cout << m_rgb.m_g << ", ";
+  std::cout << m_rgb.m_b << ")\n";
+}
 
