@@ -262,7 +262,6 @@ double findBestRatio(std::string filename, double percent)
   return 0.08;
 }
 
-// Refactor
 void extractColor(std::string filename, double percent,
 		  double ratio, double &totalProcessTime_o,
 		  double &averageProcessTime_o, std::vector<Color> &colorVector)

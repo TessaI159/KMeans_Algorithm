@@ -61,6 +61,8 @@ void extractColor(std::string filename, double percent, double ratio,
 		  double &totalProcessTime_o, double &averageProcessTime_o,
 		  std::vector<Color> &colorVector);
 
+
+// Main logic loop of extractColor. Synonymous to findElbowLoop for findElbow.
 int extractColorLoop(std::string filename, double percent, double ratio,
 			std::vector<Color> &colorVector);
 

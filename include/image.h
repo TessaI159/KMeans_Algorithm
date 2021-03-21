@@ -1,7 +1,7 @@
 #ifndef IMAGE_H
 #define IMAGE_H
 
-#include "../header-only/pixel.h"
+#include "pixel.h"
 
 #include <opencv2/opencv.hpp>
 
