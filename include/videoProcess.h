@@ -24,9 +24,9 @@ void processVideo(std::string filename, int centroids);
 void processVideoLoop(std::string filename, double ratio, int centroids);
 
 // Process a single frame of video in the form of a cv::Mat pointer
-void processFrame(cv::Mat *frame, int centroids, int currentFrame);
+void processFrame(cv::Mat *frame, int centroids, int currentFrame, cv::VideoWriter &videoWriter);
 
-// Why is it called find elbow, you may ask?
+// Why is it called find elbow, you may ask
 // https://www.geeksforgeeks.org/elbow-method-for-optimal-value-of-k-in-kmeans/
 // Find the optimal number of centroids using the elbow method
 int findElbow(std::string filename, double ratio);
@@ -44,7 +44,6 @@ std::map<int, int> findElbowLoop(std::string filename, double percent, double ra
 // Finds the elbow of a single frame and returns it to findElbowLoop
 int findElbowFrame(cv::Mat* frame);
 
-// Not finished
 // Calls extractColor to run on percent% of frames in video filename
 // Calls compareAccuracy maxRatio - 1 (defined inside the function for now)
 // Compares the accuracy of maxRatio and every ratio down to minRatio
@@ -61,25 +60,29 @@ void extractColor(std::string filename, double percent, double ratio,
 		  double &totalProcessTime_o, double &averageProcessTime_o,
 		  std::vector<Color> &colorVector);
 
-
 // Main logic loop of extractColor. Synonymous to findElbowLoop for findElbow.
 // Tests percent% of frames at ratio and returns a vector through an out variable
 // Containing all the colors found
 int extractColorLoop(std::string filename, double percent, double ratio,
-			std::vector<Color> &colorVector);
+		     std::vector<Color> &colorVector);
 
 // Find the 3 dominant colors in an image and returns them in a vector
 // Uses 3 because that is the most common number of centroids that will be
 // picked by findElbow
 // I don't mind returning this vector by value instead of
-// reference because it only contains 3 colors
+// reference because it only contains 3 objects
 std::vector<Color> extractColorFrame(cv::Mat *frame, int currentFrame);
 
 // Finds and returns the average difference in color using deltaE00Difference (color.cpp)
 // largestDistance_o is changed to be the largest absolute difference
 // between two colors
-double compareAccuracy(std::vector<Color> largerColorVector,
-		       std::vector<Color> smallerColorVector, double &largestDistance_o);
+void compareAccuracy(std::vector<Color> largerColorVector,
+		     std::vector<Color> smallerColorVector, double &largestDistance_o);
 
+void createFrame(int width, int height, std::vector<Pixel> &pixelVector,
+		 std::vector<int> &ratios, cv::VideoWriter &videoWriter, cv::Mat &createdFrame);
+void drawFrame(int width, int height, std::vector<Pixel> &pixelVector,
+	       std::vector<int> &ratios, cv::Mat &frame);
+void writeFrame(cv::VideoWriter &videoWriter, cv::Mat &frame);
 
 #endif

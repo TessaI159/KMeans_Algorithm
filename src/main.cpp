@@ -19,6 +19,9 @@
 // Sample ~2% of frames to test for color accuracy/speed
 // Guesstimate how long the process will take, give or take a few seconds
 
+// Cache partially finished results so we don't have to start over every single time
+// or if something kills the process
+
 
 int main(int argc, char* args[])
 {

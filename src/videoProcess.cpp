@@ -61,7 +61,11 @@ void processVideoLoop(std::string filename, double ratio, int centroids)
   cv::Mat frame{};
   cv::Mat resizedFrame{};
   int last{-1};
-
+  std::string videoOutput{"_output.avi"};
+  cv::VideoWriter videoWriter(filename + videoOutput, cv::VideoWriter::fourcc
+			      ('M', 'J', 'P', 'G'), video.get(cv::CAP_PROP_FPS),
+			      cv::Size(100, 100));
+  assert(videoWriter.isOpened());
   while(true)
     {
       video >> frame;
@@ -75,7 +79,7 @@ void processVideoLoop(std::string filename, double ratio, int centroids)
       assert(resizedFrame.data);
 
       index++;
-      processFrame(&resizedFrame, centroids, index);
+      processFrame(&resizedFrame, centroids, index, videoWriter);
 
       double percentage = floor(static_cast<double>(static_cast<double>(index) /
 						    static_cast<double>(frames)) * 100);
@@ -85,30 +89,39 @@ void processVideoLoop(std::string filename, double ratio, int centroids)
 	  std::cout << percentage << "%\n";
 	}
     }
+  videoWriter.release();
   video.release();
 }
 
-void processFrame(cv::Mat* frame, int centroids, int currentFrame)
+void processFrame(cv::Mat* frame, int centroids, int currentFrame, cv::VideoWriter &videoWriter)
 {
   std::ofstream output{};
   output.open(PROJECT_PATH + "output", std::ios_base::app);
   assert(!output.fail());
-
-  // Needs changing
-  (void)currentFrame;
 
   std::vector<Pixel> pixelVector{};
   scanImage(*frame, pixelVector);
   std::vector<Centroid> centroidVector{};
   createAndProcessCentroids(pixelVector, centroidVector, centroids, 20);
 
+  output << "Frame: " << currentFrame << "\n";
+  std::vector<int> ratioVector{};
+  std::vector<Pixel> framePixelVector{};
   for(auto &centroid : centroidVector)
     {
       centroid.printLocation(true, output, frame->rows * frame->cols);
+      ratioVector.push_back((static_cast<double>(centroid.getOwnedPixels_ptrSize()) /
+			     static_cast<double>(frame->rows * frame->cols)) * 100);
+      framePixelVector.push_back(Pixel{centroid.getLocation().r, centroid.getLocation().g,
+				       centroid.getLocation().b});
     }
 
   output << "\n";
   output.close();
+
+  cv::Mat createdFrame{};
+  createFrame(frame->cols, frame->rows, framePixelVector, ratioVector,
+	      videoWriter, createdFrame);
 }
 
 int findElbow(std::string filename, double ratio)
@@ -220,41 +233,66 @@ int findElbowFrame(cv::Mat* frame)
   return 0;
 }
 
+// TODO remove the early stop and force the function to
+// analyze every different ratio and base its decision off
+// more than just color accuracy
 double findBestRatio(std::string filename, double percent)
 {
+  return 0.02;
   double totalProcessTimeLarge{};
   double totalProcessTimeSmall{};
   double averageProcessTimeSmall{};
   double averageProcessTimeLarge{};
   double largestDifference{};
-  std::vector<double> largestDifferenceVector{};
-  std::vector<double> averageDifferenceVector{};
-  std::vector<double> totalTimeVector{};
-  std::vector<double> averageTimeVector{};
-  std::vector<int> lostCentroids{};
+  double smallestLargestDifference{};
+  int ratioOfSmallestLargestDifference{};
+  double averageProcessTimeOfSmallestLargestDifference{};
   const int minRatio{1};
-  const int maxRatio{8};
+  const int maxRatio{15};
 
   std::vector<Color> colorVectorLarge{};
   extractColor(filename, percent, maxRatio, totalProcessTimeLarge,
 	       averageProcessTimeLarge, colorVectorLarge);
+
   for (int ratio{minRatio}; ratio < maxRatio; ++ratio)
     {
       std::vector<Color> colorVectorSmall{};
       extractColor(filename, percent, ratio, totalProcessTimeSmall,
 		   averageProcessTimeSmall, colorVectorSmall);
-      double averageDifference {compareAccuracy(colorVectorLarge, colorVectorSmall, largestDifference)};
-      std::cout << "The average color difference between ratios of " << maxRatio << " and " << ratio << " is " << averageDifference << "\n";
-      std::cout << "The largest color difference between ratios of " << maxRatio << " and " << ratio << " is " << largestDifference << "\n";
-      std::cout << "The average speed difference (per frame) is " << averageProcessTimeLarge - averageProcessTimeSmall << "\n";
 
-      largestDifferenceVector.push_back(largestDifference);
-      averageDifferenceVector.push_back(averageDifference);
-      totalTimeVector.push_back(totalProcessTimeSmall);
-      averageTimeVector.push_back(averageProcessTimeSmall);
-      lostCentroids.push_back(colorVectorLarge.size() - colorVectorSmall.size());
+      compareAccuracy(colorVectorLarge, colorVectorSmall, largestDifference);
+
+
+      if(largestDifference < 1.5)
+	{
+	  return static_cast<double>(static_cast<double>(ratio) / 100.0);
+	}
+
+      else if(ratio == minRatio)
+	{
+	  smallestLargestDifference = largestDifference;
+	  ratioOfSmallestLargestDifference = ratio;
+	  averageProcessTimeOfSmallestLargestDifference = averageProcessTimeSmall;
+	}
+      else if(smallestLargestDifference > largestDifference)
+	{
+	  smallestLargestDifference = largestDifference;
+	  ratioOfSmallestLargestDifference = ratio;
+	  averageProcessTimeOfSmallestLargestDifference = averageProcessTimeSmall;
+	}
+
     }
-  return 0.08;
+  cv::VideoCapture video(filename, cv::CAP_FFMPEG);
+  assert(video.isOpened());
+  double frames{video.get(cv::CAP_PROP_FRAME_COUNT)};
+
+  std::cout << "Picked ratio: " << static_cast<double>(static_cast<double>(ratioOfSmallestLargestDifference) / 100.0) << "\n";
+  std::cout << "The largest difference with this ratio is: " << smallestLargestDifference << "\n";
+  std::cout << "Each frame takes an average of: " << averageProcessTimeOfSmallestLargestDifference << "seconds\n";
+  std::cout << "This video should take about: " << averageProcessTimeOfSmallestLargestDifference * frames << " seconds.\n";
+
+
+  return static_cast<double>(static_cast<double>(ratioOfSmallestLargestDifference) / 100.0);
 }
 
 void extractColor(std::string filename, double percent,
@@ -290,7 +328,7 @@ int extractColorLoop(std::string filename, double percent, double ratio,
   cv::Mat resizedFrame{};
   int currentFrame{1};
   double frames{video.get(cv::CAP_PROP_FRAME_COUNT)};
-  int counter{10};
+  int counter{0};
   while(true)
     {
 
@@ -310,7 +348,7 @@ int extractColorLoop(std::string filename, double percent, double ratio,
 	  double percentComplete{floor(((static_cast<double>(currentFrame) / frames)) * 100)};
 	  if(percentComplete > last)
 	    {
-	      // std::cout << percentComplete << "% complete\n";
+	      std::cout << percentComplete << "% complete with ratio " << ratio << "\n";
 	      last = percentComplete;
 	    }
 
@@ -353,11 +391,10 @@ std::vector<Color> extractColorFrame(cv::Mat *frame, int currentFrame)
 
 }
 
-double compareAccuracy(std::vector<Color> colorVectorLarge,
-		       std::vector<Color> colorVectorSmall,
-		       double &largestDifference_o)
+void compareAccuracy(std::vector<Color> colorVectorLarge,
+		     std::vector<Color> colorVectorSmall,
+		     double &largestDifference_o)
 {
-  double totalDifference{};
   largestDifference_o = 0.0;
   std::size_t totalColors{colorVectorLarge.size()};
   Color largestColorDifference{};
@@ -376,8 +413,50 @@ double compareAccuracy(std::vector<Color> colorVectorLarge,
 	      smallestColorDifference = colorVectorSmall[i];
 	      largestDifference_o = difference;
 	    }
-	  totalDifference += difference;
 	}
     }
-  return abs(totalDifference / static_cast<double>(totalColors));
+}
+
+void createFrame(int width, int height, std::vector<Pixel> &pixelVector,
+		 std::vector<int> &ratios, cv::VideoWriter &videoWriter, cv::Mat &createdFrame)
+{
+  createdFrame = cv::Mat::zeros(width, height, CV_8UC3);
+  int total{0};
+  for(auto &ratio : ratios)
+    {
+      total += ratio;
+    }
+
+  if(total != 100)
+    {
+      ratios[ratios.size() - 1] += 100 - total;
+    }
+
+  drawFrame(width, height, pixelVector, ratios, createdFrame);
+  writeFrame(videoWriter, createdFrame);
+}
+
+void drawFrame(int width, int height, std::vector<Pixel> &pixelVector,
+	       std::vector<int> &ratios, cv::Mat &frame)
+{
+  (void)width;
+  int total{0};
+  assert(pixelVector.size() == ratios.size());
+  
+  for(std::size_t i{0}; i < pixelVector.size(); ++i)
+    {
+      const cv::Scalar tempScalor{static_cast<double>(pixelVector[i].r),
+	static_cast<double>(pixelVector[i].g),
+	static_cast<double>(pixelVector[i].b)};
+      
+      cv::Rect rectangleToDraw{total == 0 ? total : total + 1, 0, ratios[i], height};
+      cv::rectangle(frame, rectangleToDraw, tempScalor, cv::FILLED);
+    }
+  cv::imshow("Frame", frame);
+}
+
+void writeFrame(cv::VideoWriter &videoWriter, cv::Mat &frame)
+{
+  assert(videoWriter.isOpened());
+  videoWriter.write(frame);
 }

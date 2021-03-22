@@ -31,12 +31,15 @@ public:
   int getID();
   
   // Changes the centroid's unique m_id
-  // Thinking abou it, this seems dangerous
+  // Thinking about it, this seems dangerous
   // Any function could technically change a centroid's ID
   void setID(int id);
   
   // Returns m_location
   Pixel getLocation();
+
+  // Returns the number of owned pixels
+  int getOwnedPixels_ptrSize();
   
   // Updates the location by finding the average r, g, and b
   // of all pixels pointed to by m_ownedPixels_ptr

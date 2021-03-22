@@ -30,6 +30,11 @@ Pixel Centroid::getLocation()
   return m_location;
 }
 
+int Centroid::getOwnedPixels_ptrSize()
+{
+  return m_ownedPixels_ptr.size();
+}
+
 void Centroid::updateLocation()
 {
   double rAverage{0};

@@ -7,7 +7,7 @@ opencv_lib_dir = include_directories('deps/opencv4/lib')
 
 add_project_link_arguments('-L../deps/opencv4/lib', '-lopencv_core', '-lopencv_imgproc',
 			   '-lopencv_imgcodecs', '-lopencv_video', '-lopencv_videoio',
-			   language : 'cpp')
+			   '-lopencv_highgui', language : 'cpp')
 
 
 subdir('src')
