@@ -64,7 +64,8 @@ void processVideoLoop(std::string filename, double ratio, int centroids)
   std::string videoOutput{"_output.avi"};
   cv::VideoWriter videoWriter(filename + videoOutput, cv::VideoWriter::fourcc
 			      ('M', 'J', 'P', 'G'), video.get(cv::CAP_PROP_FPS),
-			      cv::Size(100, 100));
+			      cv::Size(640, 480));
+  
   assert(videoWriter.isOpened());
   while(true)
     {
@@ -120,7 +121,7 @@ void processFrame(cv::Mat* frame, int centroids, int currentFrame, cv::VideoWrit
   output.close();
 
   cv::Mat createdFrame{};
-  createFrame(frame->cols, frame->rows, framePixelVector, ratioVector,
+  createFrame(640, 480, framePixelVector, ratioVector,
 	      videoWriter, createdFrame);
 }
 
@@ -420,7 +421,7 @@ void compareAccuracy(std::vector<Color> colorVectorLarge,
 void createFrame(int width, int height, std::vector<Pixel> &pixelVector,
 		 std::vector<int> &ratios, cv::VideoWriter &videoWriter, cv::Mat &createdFrame)
 {
-  createdFrame = cv::Mat::zeros(width, height, CV_8UC3);
+  createdFrame = cv::Mat::zeros(480, 640, CV_8UC3);
   int total{0};
   for(auto &ratio : ratios)
     {
@@ -439,24 +440,45 @@ void createFrame(int width, int height, std::vector<Pixel> &pixelVector,
 void drawFrame(int width, int height, std::vector<Pixel> &pixelVector,
 	       std::vector<int> &ratios, cv::Mat &frame)
 {
-  (void)width;
   int total{0};
+  int totalWidthDrawn{0};
   assert(pixelVector.size() == ratios.size());
-  
   for(std::size_t i{0}; i < pixelVector.size(); ++i)
     {
       const cv::Scalar tempScalor{static_cast<double>(pixelVector[i].r),
 	static_cast<double>(pixelVector[i].g),
 	static_cast<double>(pixelVector[i].b)};
-      
-      cv::Rect rectangleToDraw{total == 0 ? total : total + 1, 0, ratios[i], height};
+      int drawWidth{static_cast<int>(floor(static_cast<double>(ratios[i] / 100.0) * width))};
+
+      totalWidthDrawn += drawWidth;
+      if(i == pixelVector.size() - 1)
+	{
+	  if(totalWidthDrawn != width)
+	    {
+	      int extra = width - totalWidthDrawn;
+	      drawWidth += extra;
+	      totalWidthDrawn += extra;
+	    }
+	}
+
+      cv::Rect rectangleToDraw{total, 0, drawWidth,
+	height};
       cv::rectangle(frame, rectangleToDraw, tempScalor, cv::FILLED);
+      total += drawWidth + 1;
     }
-  cv::imshow("Frame", frame);
 }
 
 void writeFrame(cv::VideoWriter &videoWriter, cv::Mat &frame)
 {
   assert(videoWriter.isOpened());
   videoWriter.write(frame);
+}
+
+void playVideos(std::string original, std::string color)
+{
+  cv::VideoCapture originalVideo(original, cv::CAP_FFMPEG);
+  cv::VideoCapture colorVideo(color, cv::CAP_FFMPEG);
+
+  assert(originalVideo.get(cv::CAP_PROP_FRAME_COUNT) ==
+	 colorVideo.get(cv::CAP_PROP_FRAME_COUNT));
 }

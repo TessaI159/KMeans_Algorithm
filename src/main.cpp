@@ -28,6 +28,7 @@ int main(int argc, char* args[])
   bool statistics{true};
   std::string assets = "assets/";
   std::string filename{PROJECT_PATH + assets};
+  std::string colorFilename = filename;
 
   if (statistics)
     {
@@ -35,6 +36,8 @@ int main(int argc, char* args[])
 	{
 	  std::string fileAddition = args[1];
 	  filename += fileAddition;
+	  colorFilename += fileAddition;
+	  colorFilename += "_output.avi";
 	}
       else
 	{
