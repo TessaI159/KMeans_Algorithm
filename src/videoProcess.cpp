@@ -445,9 +445,9 @@ void drawFrame(int width, int height, std::vector<Pixel> &pixelVector,
   assert(pixelVector.size() == ratios.size());
   for(std::size_t i{0}; i < pixelVector.size(); ++i)
     {
-      const cv::Scalar tempScalor{static_cast<double>(pixelVector[i].r),
+      const cv::Scalar tempScalor{static_cast<double>(pixelVector[i].b),
 	static_cast<double>(pixelVector[i].g),
-	static_cast<double>(pixelVector[i].b)};
+	static_cast<double>(pixelVector[i].r)};
       int drawWidth{static_cast<int>(floor(static_cast<double>(ratios[i] / 100.0) * width))};
 
       totalWidthDrawn += drawWidth;
@@ -474,11 +474,42 @@ void writeFrame(cv::VideoWriter &videoWriter, cv::Mat &frame)
   videoWriter.write(frame);
 }
 
-void playVideos(std::string original, std::string color)
+void playVideos(std::string original, std::string color, double tolerance)
 {
   cv::VideoCapture originalVideo(original, cv::CAP_FFMPEG);
   cv::VideoCapture colorVideo(color, cv::CAP_FFMPEG);
+  tolerance = round(tolerance);
 
-  assert(originalVideo.get(cv::CAP_PROP_FRAME_COUNT) ==
-	 colorVideo.get(cv::CAP_PROP_FRAME_COUNT));
+  double originalFrames{originalVideo.get(cv::CAP_PROP_FRAME_COUNT)};
+  double colorFrames{colorVideo.get(cv::CAP_PROP_FRAME_COUNT)};
+  
+  assert(originalFrames - tolerance <= colorFrames ||
+	 originalFrames + tolerance >= colorFrames);
+
+  double originalFPS{originalVideo.get(cv::CAP_PROP_FPS)};
+  double colorFPS{colorVideo.get(cv::CAP_PROP_FPS)};
+
+  assert(originalFPS == colorFPS);
+
+  while(1)
+    {
+      cv::Mat originalFrame{};
+      cv::Mat colorFrame{};
+
+      originalVideo >> originalFrame;
+      colorVideo >> colorFrame;
+
+      if(colorFrame.empty() || originalFrame.empty())
+	{
+	  break;
+	}
+
+      cv::imshow("Original", originalFrame);
+      cv::imshow("Color", colorFrame);
+
+      if(cv::waitKey(1000 / originalFPS) == 27)
+	{
+	  break;
+	}
+    }
 }

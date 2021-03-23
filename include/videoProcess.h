@@ -85,6 +85,6 @@ void drawFrame(int width, int height, std::vector<Pixel> &pixelVector,
 	       std::vector<int> &ratios, cv::Mat &frame);
 void writeFrame(cv::VideoWriter &videoWriter, cv::Mat &frame);
 
-void playVideos(std::string original, std::string color);
+void playVideos(std::string original, std::string color, double tolerance);
 
 #endif

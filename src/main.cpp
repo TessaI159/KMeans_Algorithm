@@ -1,6 +1,5 @@
 #include "videoProcess.h"
 #include "constants.h"
-#include "color.h"
 
 #include <opencv2/opencv.hpp>
 
@@ -82,6 +81,8 @@ int main(int argc, char* args[])
     {
       processVideo(filename, -1);
     }
+
+  playVideos(filename, colorFilename, 10);
 
   return 0;
 }
