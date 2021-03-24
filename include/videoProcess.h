@@ -85,6 +85,10 @@ void drawFrame(int width, int height, std::vector<Pixel> &pixelVector,
 	       std::vector<int> &ratios, cv::Mat &frame);
 void writeFrame(cv::VideoWriter &videoWriter, cv::Mat &frame);
 
-void playVideos(std::string original, std::string color, double tolerance);
+void reorder(std::vector<Pixel> &pixelVector, std::vector<int> &intVector);
+bool descending(std::vector<int> &intVector);
+
+void playVideos(std::string original, std::string color);
+bool checkVideos(std::string original, std::string color, double tolerance);
 
 #endif

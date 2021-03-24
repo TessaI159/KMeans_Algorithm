@@ -18,6 +18,7 @@
 #include <map>
 #include <fstream>
 #include <chrono>
+#include <string_view>
 
 // TODO
 // Find a good way to calculate the optimal # of frames to sample for
@@ -65,7 +66,7 @@ void processVideoLoop(std::string filename, double ratio, int centroids)
   cv::VideoWriter videoWriter(filename + videoOutput, cv::VideoWriter::fourcc
 			      ('M', 'J', 'P', 'G'), video.get(cv::CAP_PROP_FPS),
 			      cv::Size(640, 480));
-  
+
   assert(videoWriter.isOpened());
   while(true)
     {
@@ -239,7 +240,6 @@ int findElbowFrame(cv::Mat* frame)
 // more than just color accuracy
 double findBestRatio(std::string filename, double percent)
 {
-  return 0.02;
   double totalProcessTimeLarge{};
   double totalProcessTimeSmall{};
   double averageProcessTimeSmall{};
@@ -443,9 +443,11 @@ void drawFrame(int width, int height, std::vector<Pixel> &pixelVector,
   int total{0};
   int totalWidthDrawn{0};
   assert(pixelVector.size() == ratios.size());
+  reorder(pixelVector, ratios);
+  assert(descending(ratios));
   for(std::size_t i{0}; i < pixelVector.size(); ++i)
     {
-      const cv::Scalar tempScalor{static_cast<double>(pixelVector[i].b),
+      const cv::Scalar tempScalar{static_cast<double>(pixelVector[i].b),
 	static_cast<double>(pixelVector[i].g),
 	static_cast<double>(pixelVector[i].r)};
       int drawWidth{static_cast<int>(floor(static_cast<double>(ratios[i] / 100.0) * width))};
@@ -463,7 +465,7 @@ void drawFrame(int width, int height, std::vector<Pixel> &pixelVector,
 
       cv::Rect rectangleToDraw{total, 0, drawWidth,
 	height};
-      cv::rectangle(frame, rectangleToDraw, tempScalor, cv::FILLED);
+      cv::rectangle(frame, rectangleToDraw, tempScalar, cv::FILLED);
       total += drawWidth + 1;
     }
 }
@@ -474,22 +476,41 @@ void writeFrame(cv::VideoWriter &videoWriter, cv::Mat &frame)
   videoWriter.write(frame);
 }
 
-void playVideos(std::string original, std::string color, double tolerance)
+void reorder(std::vector<Pixel> &pixelVector, std::vector<int> &intVector)
+{
+  bool noSwap{false};
+  while(!noSwap)
+    {
+      noSwap = true;
+      for(std::size_t i{0}; i < pixelVector.size() - 1; ++i)
+	{
+	  if(intVector[i] < intVector[i + 1])
+	    {
+	      std::swap(intVector[i], intVector[i + 1]);
+	      std::swap(pixelVector[i], pixelVector[i + 1]);
+	      noSwap = false;
+	    }
+	}
+    }
+}
+
+bool descending(std::vector<int> &intVector)
+{
+  for(std::size_t i{0}; i < intVector.size() - 1; ++i)
+    {
+      if(intVector[i] < intVector[i + 1])
+	{
+	  return false;
+	}
+    }
+  return true;
+}
+void playVideos(std::string original, std::string color)
 {
   cv::VideoCapture originalVideo(original, cv::CAP_FFMPEG);
   cv::VideoCapture colorVideo(color, cv::CAP_FFMPEG);
-  tolerance = round(tolerance);
-
-  double originalFrames{originalVideo.get(cv::CAP_PROP_FRAME_COUNT)};
-  double colorFrames{colorVideo.get(cv::CAP_PROP_FRAME_COUNT)};
-  
-  assert(originalFrames - tolerance <= colorFrames ||
-	 originalFrames + tolerance >= colorFrames);
 
   double originalFPS{originalVideo.get(cv::CAP_PROP_FPS)};
-  double colorFPS{colorVideo.get(cv::CAP_PROP_FPS)};
-
-  assert(originalFPS == colorFPS);
 
   while(1)
     {
@@ -512,4 +533,16 @@ void playVideos(std::string original, std::string color, double tolerance)
 	  break;
 	}
     }
+}
+
+bool checkVideos(std::string original, std::string color, double tolerance)
+{
+  cv::VideoCapture originalVideo(original, cv::CAP_FFMPEG);
+  cv::VideoCapture colorVideo(color, cv::CAP_FFMPEG);
+  tolerance = round(tolerance);
+
+  double originalFrames{originalVideo.get(cv::CAP_PROP_FRAME_COUNT)};
+  double colorFrames{colorVideo.get(cv::CAP_PROP_FRAME_COUNT)};
+
+  return (abs(originalFrames - colorFrames) <= 10);
 }
