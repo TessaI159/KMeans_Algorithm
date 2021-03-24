@@ -1,4 +1,2 @@
-# KMeans_Algorithm
-Code to run a k-means algorithm on each frame of a video to find the dominant colors, then write the dominant colors to an image/video.
-
-Running it with v0.1 is simple, and I just realized that my home directory structure is hard-coded into the source code. Look like nobody can run this unless their linux user folder is named tess. Oh well.
+# VHS
+Stands for "Video Handler and Simplifier" because I liked the acronym and desparately wanted three words that were somewhat relevant. Takes a video file as an input, runs a kmeans algorithm on it to determine the dominant colors. Then draws the dominant color, proportionate to how dominant they are, into a 640x480 video. Once finished, it plays the original video and the simplified video at the same time so you can see, in real time, the dominant colors of every frame.
