@@ -79,16 +79,27 @@ std::vector<Color> extractColorFrame(cv::Mat *frame, int currentFrame);
 void compareAccuracy(std::vector<Color> largerColorVector,
 		     std::vector<Color> smallerColorVector, double &largestDistance_o);
 
+// Calls drawFrame and writeFrame in that order.
 void createFrame(int width, int height, std::vector<Pixel> &pixelVector,
 		 std::vector<int> &ratios, cv::VideoWriter &videoWriter, cv::Mat &createdFrame);
+
+// Draws three rectangles into a frame and passes it to write frame
 void drawFrame(int width, int height, std::vector<Pixel> &pixelVector,
 	       std::vector<int> &ratios, cv::Mat &frame);
+
+//Writes the frame to the video file
 void writeFrame(cv::VideoWriter &videoWriter, cv::Mat &frame);
 
+// Sorts intVector in descending order. Each time a swap is done on
+// intVector an equivalent swap is done on pixelVector
 void reorder(std::vector<Pixel> &pixelVector, std::vector<int> &intVector);
 bool descending(std::vector<int> &intVector);
 
+// Plays both the original and the created video
 void playVideos(std::string original, std::string color);
+
+// Ensures the videos are relatively the same length i.e. within tolerance
+// frames of each other
 bool checkVideos(std::string original, std::string color, double tolerance);
 
 #endif

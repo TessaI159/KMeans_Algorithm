@@ -24,6 +24,11 @@
 // Find a good way to calculate the optimal # of frames to sample for
 // elbow and accuracy tests (double percent)
 
+// findBestRatio
+// Remove the early stop and force the function to
+// analyze every different ratio and base its decision off
+// more than just color accuracy
+
 void processVideo(std::string filename, int centroids)
 {
   std::string output = "output";
@@ -235,9 +240,7 @@ int findElbowFrame(cv::Mat* frame)
   return 0;
 }
 
-// TODO remove the early stop and force the function to
-// analyze every different ratio and base its decision off
-// more than just color accuracy
+
 double findBestRatio(std::string filename, double percent)
 {
   double totalProcessTimeLarge{};

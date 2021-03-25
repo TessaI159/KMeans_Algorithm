@@ -15,13 +15,22 @@
 // Smart pointers
 // Trim any pure blck frames off the beginning and end of the video
 // Everything but GUI needs to be in C++ -- GOOD HERE
-// Guesstimate how long the process will take, give or take a few seconds
+// Guesstimate how long the process will take, give or take a few seconds -- BORKED
 // Cache partially finished results so we don't have to start over every single time
 // or if something kills the process
+// Differentiate between partial results and a fully processed video
 
 // Check for an output that corresponds with the input before starting
 // Weird FPS bug
 // Clean up this messy file
+
+// Find a good way to calculate the optimal # of frames to sample for
+// elbow and accuracy tests (double percent)
+
+// findBestRatio
+// Remove the early stop and force the function to
+// analyze every different ratio and base its decision off
+// more than just color accuracy
 
 
 int main(int argc, char* args[])
