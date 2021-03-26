@@ -12,22 +12,10 @@
 #include <iostream>
 #include <string>
 #include <vector>
-#include <cmath>
 #include <math.h>
-#include <array>
 #include <map>
 #include <fstream>
 #include <chrono>
-#include <string_view>
-
-// TODO
-// Find a good way to calculate the optimal # of frames to sample for
-// elbow and accuracy tests (double percent)
-
-// findBestRatio
-// Remove the early stop and force the function to
-// analyze every different ratio and base its decision off
-// more than just color accuracy
 
 void processVideo(std::string filename, int centroids)
 {
