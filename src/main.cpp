@@ -46,6 +46,10 @@ int main(int argc, char* args[])
       colorFilename += fileAddition;
       colorFilename += "_output.avi";
     }
+  else if(argc == 1)
+    {
+      processVideo(filename, -1);
+    }
   else
     {
       std::cerr << "executable video-name\n";
@@ -64,10 +68,7 @@ int main(int argc, char* args[])
 	  processVideo(filename, -1);
 	}
     }
-  else
-    {
-      processVideo(filename, -1);
-    }
+
 
 
   checkVideos(filename, colorFilename, 3);

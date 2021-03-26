@@ -36,7 +36,6 @@ void processVideo(std::string filename, int centroids)
     {
       std::cout << "Finding optimal number of centroids...\n";
       centroids = findElbow(filename, ratio);
-      // centroids = 3;
       std::cout << "Optimal number of centroids is " << centroids << "\n";
     }
 
@@ -47,9 +46,14 @@ void processVideo(std::string filename, int centroids)
 
 void processVideoLoop(std::string filename, double ratio, int centroids)
 {
+  
   cv::VideoCapture video{filename, cv::CAP_FFMPEG};
   assert(video.isOpened());
-
+  if(ratio <= 0 || ratio > 1)
+    {
+      std::cerr << "Incorrect ratio. Defaulting to 0.08\n";
+      ratio = 0.08;
+    }
   int index{0};
   int frames(video.get(cv::CAP_PROP_FRAME_COUNT));
   cv::Mat frame{};
@@ -61,6 +65,7 @@ void processVideoLoop(std::string filename, double ratio, int centroids)
 			      cv::Size(640, 480));
 
   assert(videoWriter.isOpened());
+  
   while(true)
     {
       video >> frame;
