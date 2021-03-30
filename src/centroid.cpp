@@ -6,7 +6,7 @@
 #include <cassert>
 #include <fstream>
 
-Centroid::Centroid() {};
+Centroid::Centroid(int id) { m_id = id; };
 
 Centroid::Centroid(std::vector<Pixel *> pixelVector_ptr)
 {
@@ -18,12 +18,6 @@ int Centroid::getID()
 {
   return m_id;
 }
-
-void Centroid::setID(int id)
-{
-  m_id = id;
-}
-
 
 Pixel Centroid::getLocation()
 {
@@ -124,8 +118,18 @@ double Centroid::distortion()
   double totalDistance{0};
   for(auto &pixel : m_ownedPixels_ptr)
     {
-      totalDistance += distanceFromPixel(pixel);
+      double distance{distanceFromPixel(pixel)};
+      if(distance == -1)
+	{
+	  std::cerr << "Distortion method received a nullptr\n";
+	  exit(EXIT_FAILURE);
+	}
+      else
+	{
+	  totalDistance += distance;
+	}
     }
 
   return totalDistance;
 }
+

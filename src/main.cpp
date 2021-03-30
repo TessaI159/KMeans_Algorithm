@@ -12,8 +12,6 @@
 // Auto optimal resize - COMPLETED
 // Automatic conversion of video into compatible format/codec with ffmpeg library
 // Implement unique pointers to ensure each pixel in the vector only has one pointer to it (C++11)
-// Smart pointers
-// Trim any pure blck frames off the beginning and end of the video
 // Everything but GUI needs to be in C++ -- GOOD HERE
 // Guesstimate how long the process will take, give or take a few seconds -- BORKED
 // Cache partially finished results so we don't have to start over every single time

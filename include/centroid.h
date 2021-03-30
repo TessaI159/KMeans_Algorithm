@@ -21,7 +21,7 @@ private:
   Pixel m_location{};
   
 public:
-  Centroid();
+  Centroid(int id);
   
   // Sets m_ownedPixels_ptr equal to pixelVector_ptr
   // and calls updateLocation()
@@ -29,11 +29,6 @@ public:
   
   // Returns the centroids unique m_id
   int getID();
-  
-  // Changes the centroid's unique m_id
-  // Thinking about it, this seems dangerous
-  // Any function could technically change a centroid's ID
-  void setID(int id);
   
   // Returns m_location
   Pixel getLocation();
