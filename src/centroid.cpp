@@ -56,7 +56,7 @@ double Centroid::distanceFromPixel(Pixel *pixel_ptr)
   if(pixel_ptr == nullptr)
     {
       std::cerr << "Null pixel encountered during distance computing\n";
-      return -1.0;
+      exit(EXIT_FAILURE);
     }
 
   return (pow(static_cast<double>(m_location.r) - static_cast<double>(pixel_ptr->r), 2) +
@@ -84,7 +84,8 @@ Pixel* Centroid::releasePixel(int pixelID)
 	  return tempPixel;
 	}
     }
-  return nullptr;
+  std::cerr << "Pixel with id " << pixelID << " not found.\n";
+  exit(EXIT_FAILURE);
 }
 
 void Centroid::printLocation(bool newLine, std::ofstream& output, double pixels)

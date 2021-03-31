@@ -49,6 +49,7 @@ void processVideoLoop(std::string filename, double ratio, int centroids)
   
   cv::VideoCapture video{filename, cv::CAP_FFMPEG};
   assert(video.isOpened());
+  
   if(ratio <= 0 || ratio > 1)
     {
       std::cerr << "Incorrect ratio. Defaulting to 0.08\n";
@@ -95,6 +96,13 @@ void processVideoLoop(std::string filename, double ratio, int centroids)
 
 void processFrame(cv::Mat* frame, int centroids, int currentFrame, cv::VideoWriter &videoWriter)
 {
+  if(centroids < 3 || centroids > MAX_CENTROIDS)
+    {
+      std::cout << centroids;
+      std::cout << " is an invalid number. Defaulting to 3\n";
+      centroids = 3;
+    }
+  
   std::ofstream output{};
   output.open(PROJECT_PATH + "output", std::ios_base::app);
   assert(!output.fail());
@@ -104,19 +112,17 @@ void processFrame(cv::Mat* frame, int centroids, int currentFrame, cv::VideoWrit
   std::vector<Centroid> centroidVector{};
   createAndProcessCentroids(pixelVector, centroidVector, centroids, 20);
 
-  output << "Frame: " << currentFrame << "\n";
   std::vector<int> ratioVector{};
   std::vector<Pixel> framePixelVector{};
   for(auto &centroid : centroidVector)
     {
-      centroid.printLocation(true, output, frame->rows * frame->cols);
+      centroid.printLocation(false, output, frame->rows * frame->cols);
       ratioVector.push_back((static_cast<double>(centroid.getOwnedPixels_ptrSize()) /
 			     static_cast<double>(frame->rows * frame->cols)) * 100);
       framePixelVector.push_back(Pixel{centroid.getLocation().r, centroid.getLocation().g,
 				       centroid.getLocation().b});
     }
 
-  output << "\n";
   output.close();
 
   cv::Mat createdFrame{};
