@@ -556,3 +556,24 @@ bool checkVideos(std::string original, std::string color, double tolerance)
 
   return (abs(originalFrames - colorFrames) <= 10);
 }
+
+
+bool checkCache(std::string filename)
+{
+  int lines{0};
+  std::string cacheFile{filename + "_cache"};
+  std::ifstream cacheFileStream{cacheFile};
+  assert(cacheFileStream.is_open());
+
+  std::string line{};
+  while(std::getline(cacheFileStream, line))
+    {
+      lines++;
+    }
+  cacheFileStream.close();
+
+  cv::VideoCapture videoThing(filename, cv::CAP_FFMPEG);
+  double frames{videoThing.get(cv::CAP_PROP_FRAME_COUNT)};
+
+  return frames == (lines - 2);
+}

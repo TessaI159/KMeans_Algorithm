@@ -105,4 +105,6 @@ void playVideos(std::string original, std::string color);
 // frames of each other
 bool checkVideos(std::string original, std::string color, double tolerance);
 
+bool checkCache(std::string filename);
+
 #endif

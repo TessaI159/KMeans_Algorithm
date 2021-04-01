@@ -37,12 +37,6 @@ int main(int argc, char* args[])
     {
       std::string fileAddition = args[1];
       filename += fileAddition;
-      colorFilename += fileAddition;
-      colorFilename += "_output.avi";
-    }
-  else if(argc == 1)
-    {
-      processVideo(filename, -1);
     }
   else
     {
@@ -50,25 +44,7 @@ int main(int argc, char* args[])
       return -1;
     }
 
-  if(FILE *file = fopen(colorFilename.c_str(), "r"))
-    {
-      fclose(file);
-      std::cout << "Looks like this one's already been processed. Want to process it again?";
-      std::cout << " [y/n] ";
-      char choice{};
-      std::cin >> choice;
-      if(choice == 'y')
-	{
-	  processVideo(filename, -1);
-	}
-    }
-  else
-    {
-      processVideo(filename, -1);
-    }
-
-
-
+  std::cout << checkCache(filename);
   checkVideos(filename, colorFilename, 3);
   playVideos(filename, colorFilename);
 
