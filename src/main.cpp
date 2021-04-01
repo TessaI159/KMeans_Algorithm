@@ -18,10 +18,6 @@
 // or if something kills the process
 // Differentiate between partial results and a fully processed video
 
-// Check for an output that corresponds with the input before starting
-// Weird FPS bug
-// Clean up this messy file
-
 // Find a good way to calculate the optimal # of frames to sample for
 // elbow and accuracy tests (double percent)
 
@@ -65,6 +61,10 @@ int main(int argc, char* args[])
 	{
 	  processVideo(filename, -1);
 	}
+    }
+  else
+    {
+      processVideo(filename, -1);
     }
 
 

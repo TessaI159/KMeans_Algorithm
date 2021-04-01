@@ -9,6 +9,7 @@
 
 #include <string>
 #include <map>
+#include <fstream>
 
 // the main function from this file, and the only one any outside function
 // will need to call.
@@ -21,10 +22,12 @@ void processVideo(std::string filename, int centroids);
 // The main logic loop that runs for processVideo after processVideo has
 // figured out the best ratio and number of centroids
 // Calls processFrame once per frame of video
-void processVideoLoop(std::string filename, double ratio, int centroids);
+void processVideoLoop(std::string filename, double ratio, int centroids,
+		      std::ofstream &outputCache);
 
 // Process a single frame of video in the form of a cv::Mat pointer
-void processFrame(cv::Mat *frame, int centroids, int currentFrame, cv::VideoWriter &videoWriter);
+void processFrame(cv::Mat *frame, int centroids, std::ofstream &outputCache,
+		  cv::VideoWriter &videoWriter);
 
 // Why is it called find elbow, you may ask
 // https://www.geeksforgeeks.org/elbow-method-for-optimal-value-of-k-in-kmeans/
